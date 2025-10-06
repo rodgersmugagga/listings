@@ -1,31 +1,38 @@
-import express, { json } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
-import cors from 'cors';   
-import helm from 'helmet';  
+import cors from 'cors';
+import helmet from 'helmet';
 
-// Load environment variables from .env file
 dotenv.config();
 
-mongoose.connect(process.env.MONGO).then(() => {
-    console.log('Connected to MongoDB');
-}).catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-    process.exit(1);
-});
-
 const app = express();
+
+// Middleware
+app.use(helmet());
+app.use(cors());
 app.use(express.json());
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-} );
-
-
+// Routes
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 
+// MongoDB connection
+mongoose.connect(process.env.MONGO, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+  process.exit(1);
+});
 
-
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

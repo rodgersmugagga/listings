@@ -42,8 +42,8 @@ export const signup = async(req, res) => {
 
 };
 
-//user login controller
-export const login = async(req, res) => {
+//user signin controller
+export const signin = async(req, res) => {
     try {
       //get user input
       const { email, password } = req.body;
@@ -51,13 +51,13 @@ export const login = async(req, res) => {
       //check if user exists
       let user = await User.findOne({ email });
       if(!user) {
-        return res.status(400).json({ message: "Invalid Credentials" });
+        return res.status(400).json({ message: "User not found!" });
       }
 
       //compare password
       const isMatch = await bcrypt.compare(password, user.password);
       if(!isMatch) {
-        return res.status(400).json({ message: 'Invalid Credentials' });
+        return res.status(400).json({ message: 'Invalid password!' });
       }
 
       //generate a JWT token
@@ -68,7 +68,10 @@ export const login = async(req, res) => {
       );
 
       //return a success response with the token
-      res.json({ token });
+      res.json({ 
+        message: "Login successful", 
+        token: token
+       });
       
 
     } catch (error) {
@@ -84,4 +87,4 @@ export const logout = (req, res) => {
 
 
 //export the controllers
-//export default { signup, login, logout }; 
+export default { signup, signin, logout }; 
