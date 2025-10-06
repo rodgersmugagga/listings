@@ -8,6 +8,7 @@ dotenv.config();
 
 //user signup controller
 export const signup = async(req, res) => {
+  
     try {
       //get user input
       const {username, email, password} = req.body;
@@ -83,4 +84,4 @@ export const logout = (req, res) => {
 
 
 //export the controllers
-export default { signup, login, logout }; 
+//export default { signup, login, logout }; 
