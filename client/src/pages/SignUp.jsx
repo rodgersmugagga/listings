@@ -1,5 +1,7 @@
 import React from "react"; // Import React library to use React features
 import { Link, useNavigate } from "react-router-dom"; // Import Link component for client-side navigation
+import Oauth from "../components/OAuth";
+import OAuth from "../components/OAuth";
 
 // Define the SignUp component as a default export
 export default function SignUp() {
@@ -102,6 +104,9 @@ export default function SignUp() {
         >
           {loading ? "Signing Up..." : "Sign Up"} {/* Show loading text if request is in progress */}
         </button>
+
+        <OAuth/> {/* OAuth component for third-party authentication */}    
+
       </form>
 
       {/* Link to sign-in page */}

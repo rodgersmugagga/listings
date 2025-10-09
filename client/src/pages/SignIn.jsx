@@ -2,6 +2,8 @@ import React from "react"; // Import React library to use React features like st
 import { Link, useNavigate } from "react-router-dom"; // Import Link for navigation and useNavigate hook to programmatically navigate
 import { useDispatch, useSelector } from "react-redux"; // Import hooks to interact with Redux store
 import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice"; // Import Redux actions from user slice
+import Oauth from "../components/OAuth";
+import OAuth from "../components/OAuth";
 
 // Define SignIn component as default export
 export default function SignIn() {
@@ -98,6 +100,9 @@ export default function SignIn() {
         >
           {loading ? "Loading..." : "Sign In"} {/* Show "Loading..." when request is in progress */}
         </button>
+
+        <OAuth/> {/* OAuth component for third-party authentication */}        
+
       </form>
 
       {/* Link to sign-up page */}

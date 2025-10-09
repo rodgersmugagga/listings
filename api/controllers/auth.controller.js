@@ -86,5 +86,56 @@ export const logout = (req, res) => {
 };
 
 
-//export the controllers
-export default { signup, signin, logout }; 
+// Google Authentication Controller
+export const google = async (req, res, next) => {
+  try {
+    // Extract user data from the request body (sent from frontend Google login)
+    const { email, username, photo } = req.body;
+
+    // Check if the user already exists
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // Existing user: generate JWT and return it
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" } // token validity
+      ); 
+
+      const { password, ...userData } = user._doc;
+
+      res.status(200).json({ token, user: userData });
+    } else {
+      // Generate a random password (not used, but required by schema)
+      const randomPassword = Math.random().toString(36).slice(-8);
+
+      // Hash the random password for security
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      // Create a new user with Google data
+      const newUser = new User({
+        username : req.body.name.split(" ").toLowerCase() + Math.random().toString(36).slice(-4),
+        email,
+        password: hashedPassword,
+        avatar: req.body.photo,
+      });
+
+      // Save to DB
+      await newUser.save();
+
+      // Generate a JWT for the new user
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      const { password, ...userData } = newUser._doc;
+
+      res.status(201).json({ token, user: userData });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
