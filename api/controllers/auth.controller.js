@@ -115,7 +115,7 @@ export const google = async (req, res, next) => {
 
       // Create a new user with Google data
       const newUser = new User({
-        username : req.body.name.split(" ").toLowerCase() + Math.random().toString(36).slice(-4),
+        username: req.body.username.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
         email,
         password: hashedPassword,
         avatar: req.body.photo,
