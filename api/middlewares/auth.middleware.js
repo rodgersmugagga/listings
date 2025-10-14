@@ -1,4 +1,8 @@
-const jwt = require("jsonwebtoken");
+import jwt from 'jsonwebtoken'
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 // Middleware to authenticate requests using JWT
 const authMiddleware = (req, res, next) => {
@@ -17,10 +21,12 @@ const authMiddleware = (req, res, next) => {
         req.user = decoded.user;
         //pass to the next middleware or route handler
         next();
+
+        
     } catch (err) {
         res.status(401).json({ message: "Token is not valid" });
     }
 };
 
 // Export the authMiddleware
-module.exports = authMiddleware;
+export default authMiddleware;

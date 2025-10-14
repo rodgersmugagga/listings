@@ -2,6 +2,7 @@ import User from '../models/user.model.js'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import cloudinary from '../utils/cloudinary.js';
 
 // Load environment variables from .env file
 dotenv.config();  
@@ -62,15 +63,22 @@ export const signin = async(req, res) => {
 
       //generate a JWT token
       const token = jwt.sign(
-        { user: { id: user.id } },
+        { user: { id: user.id,isAdmin: user.isAdmin  } },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
 
       //return a success response with the token
       res.json({ 
+        
         message: "Login successful", 
-        token: token
+        token: token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar
+        }
        });
       
 
@@ -98,7 +106,7 @@ export const google = async (req, res, next) => {
     if (user) {
       // Existing user: generate JWT and return it
       const token = jwt.sign(
-        { id: user._id, isAdmin: user.isAdmin },
+        { user: { id: user._id, isAdmin: user.isAdmin } },
         process.env.JWT_SECRET,
         { expiresIn: "1h" } // token validity
       ); 
