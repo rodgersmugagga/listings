@@ -64,6 +64,8 @@ export const updateUser = async (req, res) => {
       email: req.body.email,
     };
 
+    
+
     if (req.body.password) {
   const salt = await bcryptjs.genSalt(10);
   updateData.password = await bcryptjs.hash(req.body.password, salt);
