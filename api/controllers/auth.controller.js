@@ -126,7 +126,7 @@ export const google = async (req, res, next) => {
         username: req.body.username.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
         email,
         password: hashedPassword,
-        avatar: req.body.avatar,
+        avatar: req.body.photo,
       });
 
       // Save to DB
@@ -134,10 +134,10 @@ export const google = async (req, res, next) => {
 
       // Generate a JWT for the new user
       const token = jwt.sign(
-        { id: newUser._id, isAdmin: newUser.isAdmin },
+        { user: { id: user._id, isAdmin: user.isAdmin } },
         process.env.JWT_SECRET,
-        { expiresIn: "7d" }
-      );
+        { expiresIn: "1h" } // token validity
+      ); 
 
       const { password, ...userData } = newUser._doc;
 

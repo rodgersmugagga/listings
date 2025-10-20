@@ -51,14 +51,16 @@ export const test = (req, res) => {
 
 
 export const updateUser = async (req, res) => {
+
   try {
+
     const userId = req.user.user.id;
     const targetUserId = req.params.id;
 
     if (userId.toString() !== targetUserId.toString()) {
       return res.status(401).json({ message: 'You can only update your own profile!' });
     }
-
+    
     const updateData = {
       username: req.body.username,
       email: req.body.email,
@@ -88,3 +90,32 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
+
+
+
+export const deleteUser = async (req, res, next) => {
+  
+  try {
+    
+    const userId = req.user.user.id;
+    const targetUserId = req.params.id;
+
+    if (userId.toString() !== targetUserId.toString()) {
+      return res.status(401).json({ message: 'You can only delete your own profile!' });
+    }
+
+    
+    await User.findByIdAndDelete(targetUserId);
+
+    res.status(200).json({
+      success: true,
+      message: 'User has been deleted!',
+      
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+
+}

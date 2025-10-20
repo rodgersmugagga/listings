@@ -36,15 +36,20 @@ export default function OAuth() {
       });
 
       const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Google sign-in failed:", data.message || "Sign in failed");
+        return;
+      }
+
       dispatch(signInSuccess(data));
+
+      localStorage.setItem("user", JSON.stringify(data));
+      console.log("Google sign-in successful:", data);
       
       navigate("/"); // Redirect to home page after successful login
 
-      if (res.ok) {
-        console.log("Google sign in successful", data);
-      } else {
-        console.log("Google sign in failed", data.message || "Sign in failed!");
-      }     
+          
 
     } catch (error) {
       console.log("Could not sign in with google!", error)

@@ -1,6 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
-import { updateUserAvatar } from "../redux/user/userSlice.js";
+import { deleteUserFailure, deleteUserStart, deleteUserSuccess, updateUserAvatar } from "../redux/user/userSlice.js";
+//import { deleteUser } from "../../../api/controllers/user.controller.js";
 
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -13,7 +14,7 @@ export default function Profile() {
   const [password, setPassword] = useState('');
 
   const [previewUrl, setPreviewUrl] = useState("");
-  const [uploading, setUploading] = useState(false);
+  //const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (file) {
@@ -39,12 +40,14 @@ export default function Profile() {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
+          
         },
         body: formData,
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Update failed");
+      //dispatch(updateUserSuccess(data))
 
       console.log("Profile updated:", data.user);
       if (file) dispatch(updateUserAvatar(data.user.avatar));
@@ -54,6 +57,40 @@ export default function Profile() {
       alert(err.message);
     }
   };
+
+  const handleDeleteUser = async () => {
+    const userId = currentUser?.user?._id;
+      
+  try {
+    dispatch(deleteUserStart());
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/delete/${userId}`, {
+  method: "DELETE",
+  headers: {
+    Authorization: `Bearer ${currentUser.token}`,
+  },
+});
+
+    const data = await res.json();
+
+    if (!res.ok || data.success === false) {
+      dispatch(deleteUserFailure(data.message || "Failed to delete user"));
+      console.error("Delete failed:", data.message);
+      alert(data.message || "Failed to delete user");
+      return;
+    }
+
+    console.log("Profile deleted successfully:", data.message);
+    alert(data.message || "Profile deleted successfully!");
+    dispatch(deleteUserSuccess(data));
+
+  } catch (error) {
+    console.error("Delete error:", error.message);
+    dispatch(deleteUserFailure(error.message));
+  }
+};
+
+
 
   return (
     <div>
@@ -74,6 +111,7 @@ export default function Profile() {
           src={previewUrl || currentUser?.user?.avatar || "https://avatars.githubusercontent.com/u/219873324?s=400&u=101a5f849e9b243737aee4b3b950c700272efb4b&v=4"}
           alt="profile"
         />
+        
 
         <input type="text" placeholder="username" className="border p-3 rounded-lg" value={username} onChange={(e) => setUsername(e.target.value)} />
         <input type="email" placeholder="email" className="border p-3 rounded-lg" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -83,7 +121,7 @@ export default function Profile() {
       </form>
 
       <div className="flex justify-between gap-4 max-w-lg mx-auto p-6">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
+        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
     </div>
