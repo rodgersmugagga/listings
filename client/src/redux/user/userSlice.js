@@ -15,7 +15,16 @@ const userSlice = createSlice({
       state.error = null;
     },
     signInSuccess: (state, action) => {
-      state.currentUser = action.payload;
+      // Normalize user object for all login types
+      const normalizedUser = {
+        ...action.payload,
+        user: {
+          ...action.payload.user,
+          _id: action.payload.user._id || action.payload.user.id,
+          username: action.payload.user.username || action.payload.user.name,
+        },
+      };
+      state.currentUser = normalizedUser;
       state.loading = false;
       state.error = null;
     },
@@ -32,6 +41,7 @@ const userSlice = createSlice({
     updateUserAvatar: (state, action) => {
       if (state.currentUser?.user) {
         state.currentUser.user.avatar = action.payload;
+        
       }
     },
 

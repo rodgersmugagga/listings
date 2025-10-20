@@ -31,7 +31,11 @@ export default function Profile() {
     if (file) formData.append("avatar", file);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update/${currentUser.user.id}`, {
+      const userId = currentUser?.user?._id;
+      const token = currentUser?.token;
+
+      if (!userId || !token) return alert("User not loaded yet");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update/${userId}`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${currentUser.token}`,

@@ -126,7 +126,7 @@ export const google = async (req, res, next) => {
         username: req.body.username.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
         email,
         password: hashedPassword,
-        avatar: req.body.photo,
+        avatar: req.body.avatar,
       });
 
       // Save to DB

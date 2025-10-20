@@ -9,7 +9,7 @@ export const updateAvatar = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-    const userId = req.user.id; // from auth middleware
+    const userId = req.user.user.id; // from auth middleware
 
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload_stream(
@@ -52,10 +52,10 @@ export const test = (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.user.id;
     const targetUserId = req.params.id;
 
-    if (userId !== targetUserId) {
+    if (userId.toString() !== targetUserId.toString()) {
       return res.status(401).json({ message: 'You can only update your own profile!' });
     }
 
