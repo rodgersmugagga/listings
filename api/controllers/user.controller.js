@@ -65,8 +65,9 @@ export const updateUser = async (req, res) => {
     };
 
     if (req.body.password) {
-      updateData.password = bcryptjs.hashSync(req.body.password, 10);
-    }
+  const salt = await bcryptjs.genSalt(10);
+  updateData.password = await bcryptjs.hash(req.body.password, salt);
+}
 
     if (req.file && req.file.path) {
       updateData.avatar = req.file.path; // Cloudinary URL
