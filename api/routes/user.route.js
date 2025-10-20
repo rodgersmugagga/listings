@@ -14,6 +14,10 @@ router.patch('/update/:id', authMiddleware, upload.single('avatar'), updateUser)
 // Update avatar only
 router.patch("/avatar", authMiddleware, upload.single("avatar"), updateAvatar);
 
+// Delete user account
 router.delete('/delete/:id', authMiddleware, deleteUser);
+
+// Signout
+router.get('/signout/:id', authMiddleware, deleteUser);
 
 export default router;

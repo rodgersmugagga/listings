@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess, updateUserAvatar } from "../redux/user/userSlice.js";
+import { deleteUserFailure, deleteUserStart, deleteUserSuccess, SignOutUserStart, updateUserAvatar } from "../redux/user/userSlice.js";
 //import { deleteUser } from "../../../api/controllers/user.controller.js";
 
 export default function Profile() {
@@ -92,6 +92,29 @@ export default function Profile() {
 
 
 
+const handleSignOut = () => {
+  try {
+    // Dispatch Redux action to reset user state
+    dispatch(SignOutUserStart());
+
+    // Remove JWT token from localStorage (or cookies if you use them)
+    localStorage.removeItem("token");
+
+    // Reset user state in Redux
+    dispatch(deleteUserSuccess(null)); // or a dedicated signOutSuccess action
+
+    // Notify user
+    alert("Signed out successfully!");
+
+    
+  } catch (error) {
+    console.error("Sign out error:", error.message);
+    dispatch(deleteUserFailure(error.message));
+  }
+};
+
+
+
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -122,7 +145,7 @@ export default function Profile() {
 
       <div className="flex justify-between gap-4 max-w-lg mx-auto p-6">
         <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
     </div>
   );

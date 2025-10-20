@@ -87,11 +87,6 @@ export const signin = async(req, res) => {
     }
 };
 
-//user logout controller
-export const logout = (req, res) => {
-    // Invalidate the token on the client side by removing it from storage
-    res.json({ message: 'User logged out successfully' });
-};
 
 
 // Google Authentication Controller
@@ -147,3 +142,12 @@ export const google = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+//user Signout controller
+export const signout = (req, res, next) => {
+    
+    res.json({ message: 'You have signed out successfully' });
+};
+
