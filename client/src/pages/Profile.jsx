@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
 import { deleteUserFailure, deleteUserStart, deleteUserSuccess, SignOutUserStart, updateUserAvatar } from "../redux/user/userSlice.js";
 //import { deleteUser } from "../../../api/controllers/user.controller.js";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -141,6 +142,7 @@ const handleSignOut = () => {
         <input type="password" placeholder="password" className="border p-3 rounded-lg" value={password} onChange={(e) => setPassword(e.target.value)} />
 
         <button type="submit" className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4">Update</button>
+        <Link className="bg-green-700  text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4" to={'/create-listing'}> Create Listing </Link>
       </form>
 
       <div className="flex justify-between gap-4 max-w-lg mx-auto p-6">
