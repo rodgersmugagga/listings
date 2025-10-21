@@ -134,7 +134,7 @@ export const google = async (req, res, next) => {
         { expiresIn: "1h" } // token validity
       ); 
 
-      const { password, ...userData } = newUser._doc;
+      const { password, ...userData } = user._doc;
 
       res.status(201).json({ token, user: userData });
     }
