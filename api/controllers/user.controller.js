@@ -1,6 +1,7 @@
 import cloudinary from '../utils/cloudinary.js';
 import User from '../models/user.model.js';
-import bcryptjs from 'bcryptjs';  
+import bcryptjs from 'bcryptjs'; 
+import Listing from  '../models/listing.model.js';
 
 
 
@@ -119,3 +120,26 @@ export const deleteUser = async (req, res, next) => {
   }
 
 }
+
+export const getListings = async (req, res) => {
+
+  try {
+
+    const userId = req.user.user.id;
+    const targetUserId = req.params.id;
+
+    if (userId.toString() !== targetUserId.toString()) {
+      return res.status(401).json({ message: 'You can only view your own listings!' });
+    }
+    
+   
+    const listings = await Listing.find({userRef: targetUserId});
+
+    res.status(200).json({ listings });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+

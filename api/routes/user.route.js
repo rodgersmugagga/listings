@@ -1,5 +1,5 @@
 import express from 'express'; 
-import { test, updateUser, updateAvatar, deleteUser } from '../controllers/user.controller.js';
+import { test, updateUser, updateAvatar, deleteUser, getListings } from '../controllers/user.controller.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 
 import upload from "../middlewares/multer.js";// Cloudinary upload
@@ -19,5 +19,8 @@ router.delete('/delete/:id', authMiddleware, deleteUser);
 
 // Signout
 router.get('/signout/:id', authMiddleware, deleteUser);
+
+// Update profile with optional avatar
+router.get('/listings/:id', authMiddleware, getListings);
 
 export default router;
