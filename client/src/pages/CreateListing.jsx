@@ -31,7 +31,7 @@ export default function CreateListing() {
 
   // Handles form field changes
   const handleChange = (e) => {
-    const { id, value, type, checked } = e.target;
+    const { id, value, checked } = e.target;
 
     // Handle rent/sale type selection
     if (id === 'sale' || id === 'rent') {
