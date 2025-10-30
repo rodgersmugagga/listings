@@ -154,6 +154,41 @@ const handleShowListings = async () => {
 
 
 
+const handleListingDelete = async (listingId) => {
+    
+      
+  try {
+    
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/delete/${listingId}`, {
+  method: "DELETE",
+  headers: {
+    Authorization: `Bearer ${currentUser.token}`,
+  },
+});
+
+    const data = await res.json();
+
+    if (!res.ok || data.success === false) {
+      
+      console.error("Delete failed:", data.message);
+      alert(data.message || "Failed to delete listing!");
+      return;
+    }
+
+    setUserListings((prev)=>prev.filter((listing)=>listing._id !== listingId));
+
+    console.log("Listing deleted successfully:", data.message);
+    alert(data.message || "Listing deleted successfully!");
+    
+
+  } catch (error) {
+    console.error("Delete error:", error.message);
+    
+  }
+};
+
+
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -216,7 +251,7 @@ const handleShowListings = async () => {
         </Link>
 
         <div className="flex flex-col items-center">
-          <button className="text-red-700 uppercase">Delete</button>
+          <button onClick={()=>handleListingDelete(listing._id)} className="text-red-700 uppercase">Delete</button>
           <button className="text-green-700 uppercase">Edit</button>
         </div>
       </div>
