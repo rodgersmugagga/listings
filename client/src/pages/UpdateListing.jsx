@@ -143,7 +143,8 @@ export default function CreateListing() {
       }
 
       // Navigate to the new listing page
-      navigate(`/listing/${data._id}`); // fixed template literal quotes
+      const listingId = params.listingId;
+      navigate(`/listing/${data._id || listingId}`);
 
     } catch (error) {
       setError(error.message);
