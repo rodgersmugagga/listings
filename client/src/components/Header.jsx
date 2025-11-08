@@ -9,7 +9,8 @@ export default function Header() {
   console.log(currentUser);
 
   const handleSubmit =(e) => {
-    e.preventDefault();const urlParams = new URLSearchParams(window.location.search);
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
     
     urlParams.set('searchTerm', searchTerm);
     const searchQuery = urlParams.toString();
