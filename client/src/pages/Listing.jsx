@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
 
 import { FaShare, FaMapMarkerAlt, FaBed, FaBath, FaParking, FaChair } from 'react-icons/fa';
+import Contact from '../components/Contact';
 
 export default function Listing() {
   SwiperCore.use([Navigation]);
@@ -13,7 +15,10 @@ export default function Listing() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [contact, setContact] = useState(false);
   const [copied, setCopied] = useState(false);
+    // Get the logged-in user from Redux
+  const { currentUser } = useSelector(state => state.user);
 
   const params = useParams();
 
@@ -28,7 +33,7 @@ export default function Listing() {
 
         if (!res.ok) {
           setError(true);
-          console.error("Listing fetch failed:", res.statusText);
+          
           return;
         }
 
@@ -126,6 +131,10 @@ export default function Listing() {
             <FaChair className="text-lg" /> {listing.furnished ? 'Furnished' : 'Unfurnished'}
           </li>
         </ul>
+        {currentUser && listing.userRef !== currentUser?.user?._id && !contact && (
+          <button type="button" onClick={()=>setContact(true)} className='text-white border bg-slate-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>Contact Owner</button>
+        )}
+        {contact && <Contact listing={listing}/>}
       </div>
     </main>
   );
