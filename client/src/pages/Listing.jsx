@@ -103,7 +103,7 @@ export default function Listing() {
           </p>
           {listing.offer && (
             <p className="text-center text-white bg-green-900 w-full max-w-[200px] p-1 rounded-md">
-              UGX { (Number(listing.regularPrice) - Number(listing.discountedPrice)).toLocaleString('en-US') }
+              UGX { (Number(listing.regularPrice) - Number(listing.discountedPrice)).toLocaleString('en-US') } Discount
             </p>
           )}
         </div>
