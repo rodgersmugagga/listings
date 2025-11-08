@@ -127,7 +127,7 @@ const handleChange =(e) => {
      }
   }; 
 
-  const onShowMoreClick = async (e) => {
+  const onShowMoreClick = async () => {
     const numberOfListing = listings.length;
     const startIndex = numberOfListing;
     const urlParams = new URLSearchParams();
