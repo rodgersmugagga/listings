@@ -5,6 +5,14 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rodvers Listings</title>
+    <!-- Performance hints -->
+    <!-- Preconnect to common image/CDN hosts used by the app (Cloudinary) -->
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <!-- Preconnect to Google services used by OAuth and fonts -->
+    <link rel="preconnect" href="https://accounts.google.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Recommend prefetching the app shell on slow networks to improve TTFB for navigation -->
+    <link rel="prefetch" href="/index.html" as="document" />
   </head>
   <body>
     <div id="root"></div>

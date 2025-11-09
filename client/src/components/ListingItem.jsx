@@ -1,15 +1,18 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { MdLocationOn } from 'react-icons/md';
+import ProgressiveImage from './ProgressiveImage';
 
 export default function ListingItem({ listing }) {
   return (
     <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
       <Link to={`/listing/${listing._id}`}>
-        <img
+        <ProgressiveImage
           src={listing.imageUrls?.[0]}
-          alt="Listing cover"
-          className='h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-transform duration-300'
+          alt={`${listing.name} cover`}
+          className='h-[320px] sm:h-[220px] w-full hover:scale-105 transition-transform duration-300'
+          sizes='(max-width: 640px) 100vw, 330px'
+          priority={false}
         />
         <div className='p-3 flex flex-col gap-2 w-full'>
           <p className='truncate text-lg font-semibold border-b p-3 text-slate-700'>

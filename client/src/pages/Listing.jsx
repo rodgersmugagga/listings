@@ -4,10 +4,12 @@ import { useSelector } from 'react-redux';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
-import 'swiper/css/bundle';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 import { FaShare, FaMapMarkerAlt, FaBed, FaBath, FaParking, FaChair } from 'react-icons/fa';
 import Contact from '../components/Contact';
+import ProgressiveImage from '../components/ProgressiveImage';
 
 export default function Listing() {
   SwiperCore.use([Navigation]);
@@ -58,13 +60,13 @@ export default function Listing() {
       <Swiper navigation>
         {listing.imageUrls?.map((url, idx) => (
           <SwiperSlide key={`${url}-${idx}`}>
-            {/* Use an actual <img> for proper lazy-loading and accessible alt text */}
-            <img
+            {/* ProgressiveImage handles responsive srcSet, LQIP and shimmer */}
+            <ProgressiveImage
               src={url}
-              alt={`${listing.name} image`}
-              loading="lazy"
-              decoding="async"
-              className="h-[550px] w-full object-cover"
+              alt={`${listing.name} image ${idx + 1}`}
+              className="h-[550px] w-full"
+              sizes="(max-width: 640px) 100vw, (max-width: 1200px) 900px, 1200px"
+              priority={idx === 0}
             />
           </SwiperSlide>
         ))}
