@@ -68,18 +68,13 @@ export const signin = async(req, res) => {
         { expiresIn: '1h' }
       );
 
-      //return a success response with the token
+      // Return user data in the same format as Google auth
+      const { password: pass, ...userData } = user._doc;
+      
       res.json({ 
-        
-        message: "Login successful", 
-        token: token,
-        user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar
-        }
-       });
+        token,
+        user: userData
+      });
       
 
     } catch (error) {
@@ -117,11 +112,16 @@ export const google = async (req, res, next) => {
       const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
       // Create a new user with Google data
+      const baseUsername = (username || 'user').split(' ').join('').toLowerCase();
+      
+      // Ensure we have a valid photo URL or use the default avatar
+      const avatar = photo || "https://avatars.githubusercontent.com/u/219873324?s=400&u=101a5f849e9b243737aee4b3b950c700272efb4b&v=4";
+      
       const newUser = new User({
-        username: req.body.username.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
+        username: baseUsername + Math.random().toString(36).slice(-4),
         email,
         password: hashedPassword,
-        avatar: req.body.photo,
+        avatar,
       });
 
       // Save to DB
@@ -129,12 +129,12 @@ export const google = async (req, res, next) => {
 
       // Generate a JWT for the new user
       const token = jwt.sign(
-        { user: { id: user._id, isAdmin: user.isAdmin } },
+        { user: { id: newUser._id, isAdmin: newUser.isAdmin } },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" } // token validity
-      ); 
+        { expiresIn: '1h' } // token validity
+      );
 
-      const { password, ...userData } = user._doc;
+      const { password: pw, ...userData } = newUser._doc;
 
       res.status(201).json({ token, user: userData });
     }

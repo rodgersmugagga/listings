@@ -1,19 +1,17 @@
-import multer from "multer";                        
-import { CloudinaryStorage } from "multer-storage-cloudinary"; 
-import cloudinary from '../utils/cloudinary.js';  // Your preconfigured Cloudinary instance
+import multer from 'multer';
 
-// Configure Multer to store files directly on Cloudinary
-const storage = new CloudinaryStorage({
-  cloudinary,                                      
-  params: {
-    folder: "listings_app_avatars",               
-    allowed_formats: ["jpg", "png", "jpeg", "webp"], 
-    transformation: [{ width: 400, height: 400, crop: "limit" }], 
+// Use memory storage so controllers can upload buffers to Cloudinary directly.
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max per file
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|webp/;
+    const mimetype = allowed.test(file.mimetype);
+    if (mimetype) return cb(null, true);
+    cb(new Error('Unsupported file type'));
   },
 });
 
-// Create Multer instance with the Cloudinary storage
-const upload = multer({ storage });
-
-// Export the Multer instance to be used in routes
 export default upload;

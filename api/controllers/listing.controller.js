@@ -154,17 +154,53 @@ export const getListings = async (req, res, next) => {
 
 // Upload images for a listing (uses multer + multer-storage-cloudinary)
 export const uploadImages = async (req, res, next) => {
+  const uploadedImages = [];
+  
   try {
-    // multer will put uploaded files on req.files
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ success: false, message: 'No files uploaded' });
     }
 
-    // Each file object from multer-storage-cloudinary typically contains `path` which is the secure URL
-    const imageUrls = req.files.map((f) => f.path || f.secure_url || f.url).filter(Boolean);
+    if (req.files.length > 6) {
+      return res.status(400).json({ success: false, message: 'Maximum 6 images allowed' });
+    }
+
+    // Upload each file buffer to Cloudinary and collect secure URLs
+    const uploadPromises = req.files.map(async (file) => {
+      // Create data URI from buffer
+      const mime = file.mimetype; // e.g. image/jpeg
+      const b64 = file.buffer.toString('base64');
+      const dataUri = `data:${mime};base64,${b64}`;
+      const result = await (await import('../utils/cloudinary.js')).default.uploader.upload(dataUri, {
+        folder: 'listings_app_images',
+        transformation: [{ width: 1200, height: 800, crop: 'limit' }],
+      });
+      return result.secure_url || result.url;
+    });
+
+    const imageUrls = await Promise.all(uploadPromises);
+    uploadedImages.push(...imageUrls);
 
     return res.status(200).json({ success: true, imageUrls });
   } catch (error) {
+    console.error('Upload images error:', error);
+    
+    // If some images were uploaded before the error, attempt to clean them up
+    if (uploadedImages.length > 0) {
+      try {
+        const cloudinary = (await import('../utils/cloudinary.js')).default;
+        await Promise.all(
+          uploadedImages.map(async (url) => {
+            // Extract public_id from URL
+            const publicId = url.split('/').slice(-1)[0].split('.')[0];
+            await cloudinary.uploader.destroy(`listings_app_images/${publicId}`);
+          })
+        );
+      } catch (cleanupError) {
+        console.error('Cleanup error:', cleanupError);
+      }
+    }
+    
     next(error);
   }
 };

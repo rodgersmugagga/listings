@@ -26,9 +26,18 @@ app.use("/api/listing", listingRouter);
 
 
 //
+// __dirname replacement for ESM
+const __dirname = path.resolve();
+
+// Serve static files from the React app
 app.use(express.static(path.join(__dirname, '/client/dist')));
 
-app.get('*', (req, res) => {
+// Handle React routing, return all requests to React app
+app.use((req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
   res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
@@ -55,10 +64,6 @@ mongoose.connect(process.env.MONGO, {
   console.error('Error connecting to MongoDB:', error);
   process.exit(1);
 });
-
-//
-
-const __dirname = path.resolve();
 
 // Start server
 const PORT = process.env.PORT || 3000;

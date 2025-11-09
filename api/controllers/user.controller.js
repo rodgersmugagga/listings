@@ -13,31 +13,26 @@ export const updateAvatar = async (req, res) => {
     const userId = req.user.user.id; // from auth middleware
 
     // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload_stream(
-      {
-        folder: "listings_app_avatars",
-        width: 400,
-        height: 400,
-        crop: "limit",
-      },
-      async (error, uploadedImage) => {
-        if (error) return res.status(500).json({ message: error.message });
 
-        // Save Cloudinary URL in MongoDB
-        const updatedUser = await User.findByIdAndUpdate(
-          userId,
-          { avatar: uploadedImage.secure_url },
-          { new: true }
-        ).select("-password");
 
-        res.status(200).json({
-          message: "Avatar updated successfully",
-          user: updatedUser,
-        });
-      }
-    );
 
-    result.end(req.file.buffer); // pipe the file buffer
+    // Upload buffer to Cloudinary (data URI)
+    const mime = req.file.mimetype;
+    const b64 = req.file.buffer.toString('base64');
+    const dataUri = `data:${mime};base64,${b64}`;
+
+    const result = await (await import('../utils/cloudinary.js')).default.uploader.upload(dataUri, {
+      folder: 'listings_app_avatars',
+      transformation: [{ width: 400, height: 400, crop: 'limit' }],
+    });
+
+    const avatarUrl = result.secure_url || result.url;
+
+    if (!avatarUrl) return res.status(500).json({ message: 'Upload did not return a url' });
+
+    const updatedUser = await User.findByIdAndUpdate(userId, { avatar: avatarUrl }, { new: true }).select('-password');
+
+    return res.status(200).json({ message: 'Avatar updated successfully', user: updatedUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -52,33 +47,71 @@ export const test = (req, res) => {
 
 
 export const updateUser = async (req, res) => {
-
   try {
-
     const userId = req.user.user.id;
     const targetUserId = req.params.id;
 
     if (userId.toString() !== targetUserId.toString()) {
       return res.status(401).json({ message: 'You can only update your own profile!' });
     }
-    
-    const updateData = {
-      username: req.body.username,
-      email: req.body.email,
-    };
 
-    
-
-    if (req.body.password) {
-  const salt = await bcryptjs.genSalt(10);
-  updateData.password = await bcryptjs.hash(req.body.password, salt);
-}
-
-    if (req.file && req.file.path) {
-      updateData.avatar = req.file.path; // Cloudinary URL
+    // Validate email format if provided
+    if (req.body.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.email)) {
+        return res.status(400).json({ message: 'Invalid email format' });
+      }
     }
 
-    const updatedUser = await User.findByIdAndUpdate(targetUserId, updateData, { new: true }).select('-password');
+    // Check if email is already taken by another user
+    if (req.body.email) {
+      const existingUser = await User.findOne({ 
+        email: req.body.email,
+        _id: { $ne: targetUserId } // exclude current user
+      });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email is already in use' });
+      }
+    }
+
+    const updateData = {};
+
+    // Only include fields that are actually provided
+    if (req.body.username) updateData.username = req.body.username;
+    if (req.body.email) updateData.email = req.body.email;
+
+    // Handle password update with validation
+    if (req.body.password) {
+      if (req.body.password.length < 8) {
+        return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+      }
+      const salt = await bcryptjs.genSalt(10);
+      updateData.password = await bcryptjs.hash(req.body.password, salt);
+    }
+
+    // Handle avatar upload
+    if (req.file) {
+      // Upload buffer to Cloudinary
+      const mime = req.file.mimetype;
+      const b64 = req.file.buffer.toString('base64');
+      const dataUri = `data:${mime};base64,${b64}`;
+
+      const result = await cloudinary.uploader.upload(dataUri, {
+        folder: 'listings_app_avatars',
+        transformation: [{ width: 400, height: 400, crop: 'limit' }],
+      });
+
+      updateData.avatar = result.secure_url;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      targetUserId,
+      { $set: updateData },
+      { 
+        new: true,
+        runValidators: true
+      }
+    ).select('-password');
 
     res.status(200).json({
       success: true,

@@ -1,6 +1,14 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess, SignOutUserStart, updateUserAvatar } from "../redux/user/userSlice.js";
+import { 
+  deleteUserFailure, 
+  deleteUserStart, 
+  deleteUserSuccess, 
+  SignOutUserStart,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure
+} from "../redux/user/userSlice.js";
 //import { deleteUser } from "../../../api/controllers/user.controller.js";
 import { Link } from "react-router-dom";
 
@@ -27,40 +35,79 @@ export default function Profile() {
     }
   }, [file]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("email", email);
-    if (password) formData.append("password", password);
-    if (file) formData.append("avatar", file);
+  const [updateError, setUpdateError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
-    try {
-      const userId = currentUser?.user?._id;
-      const token = currentUser?.token;
-
-      if (!userId || !token) return alert("User not loaded yet");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update/${userId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${currentUser.token}`,
-          
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Update failed");
-      //dispatch(updateUserSuccess(data))
-
-      console.log("Profile updated:", data.user);
-      if (file) dispatch(updateUserAvatar(data.user.avatar));
-      alert("Profile updated successfully!");
-    } catch (err) {
-      console.error("Update error:", err);
-      alert(err.message);
+  const validateForm = () => {
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setUpdateError("Please enter a valid email address");
+      return false;
     }
+    if (password && password.length < 8) {
+      setUpdateError("Password must be at least 8 characters long");
+      return false;
+    }
+    return true;
   };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setUpdateError("");
+  setUpdateSuccess(false);
+
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+  dispatch(updateUserStart());
+
+  try {
+    const formData = new FormData();
+    let tempImageUrl = null;
+
+    if (username !== currentUser?.user?.username) formData.append("username", username);
+    if (email !== currentUser?.user?.email) formData.append("email", email);
+    if (password) formData.append("password", password);
+    if (file) {
+      formData.append("avatar", file);
+      tempImageUrl = URL.createObjectURL(file);
+      dispatch(updateUserSuccess({ ...currentUser.user, avatar: tempImageUrl }));
+    }
+
+    if ([...formData.entries()].length === 0) {
+      setUpdateError("No changes to update");
+      setIsLoading(false);
+      return;
+    }
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update/${currentUser.user._id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${currentUser.token}` },
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Update failed");
+
+    if (tempImageUrl) URL.revokeObjectURL(tempImageUrl);
+    setFile(null);
+    setPreviewUrl('');
+
+    dispatch(updateUserSuccess(data.user));
+    setUpdateSuccess(true);
+    setPassword('');
+
+    setTimeout(() => setUpdateSuccess(false), 3000);
+
+  } catch (err) {
+    console.error("Update error:", err);
+    dispatch(updateUserFailure(err.message));
+    setUpdateError(err.message || "Failed to update profile");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleDeleteUser = async () => {
     const userId = currentUser?.user?._id;
@@ -192,6 +239,25 @@ const handleListingDelete = async (listingId) => {
   return (
     <div>
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
+      
+      {/* Success message */}
+      {updateSuccess && (
+        <div className="max-w-lg mx-auto mb-4">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+            <span className="block sm:inline">Profile updated successfully!</span>
+          </div>
+        </div>
+      )}
+      
+      {/* Error message */}
+      {updateError && (
+        <div className="max-w-lg mx-auto mb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+            <span className="block sm:inline">{updateError}</span>
+          </div>
+        </div>
+      )}
+
       <form className="max-w-lg mx-auto flex flex-col gap-4 p-6" onSubmit={handleSubmit}>
 
         <input
@@ -205,8 +271,12 @@ const handleListingDelete = async (listingId) => {
         <img
           onClick={() => fileRef.current.click()}
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
-          src={previewUrl || currentUser?.user?.avatar || "https://avatars.githubusercontent.com/u/219873324?s=400&u=101a5f849e9b243737aee4b3b950c700272efb4b&v=4"}
-          alt="profile"
+          src={previewUrl || currentUser?.user?.avatar}
+          alt={`${currentUser?.user?.username}'s profile`}
+          onError={(e) => {
+            e.target.onerror = null; // Prevent infinite loop
+            e.target.src = "https://avatars.githubusercontent.com/u/219873324?s=400&u=101a5f849e9b243737aee4b3b950c700272efb4b&v=4";
+          }}
         />
         
 
@@ -214,7 +284,21 @@ const handleListingDelete = async (listingId) => {
         <input type="email" placeholder="email" className="border p-3 rounded-lg" value={email} onChange={(e) => setEmail(e.target.value)} />
         <input type="password" placeholder="password" className="border p-3 rounded-lg" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-        <button type="submit" className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4">Update</button>
+        <button 
+          type="submit" 
+          disabled={isLoading}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4 flex items-center justify-center"
+        >
+          {isLoading ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Updating...
+            </>
+          ) : 'Update'}
+        </button>
         <Link className="bg-green-700  text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4" to={'/create-listing'}> Create Listing </Link>
       </form>
 

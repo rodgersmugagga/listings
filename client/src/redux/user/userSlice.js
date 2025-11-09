@@ -38,11 +38,27 @@ const userSlice = createSlice({
       state.loading = false;
     },
 
-    updateUserAvatar: (state, action) => {
+    updateUserStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    
+    updateUserSuccess: (state, action) => {
       if (state.currentUser?.user) {
-        state.currentUser.user.avatar = action.payload;
-        
+        state.currentUser.user = {
+          ...state.currentUser.user,
+          ...action.payload
+        };
+        // Update localStorage to persist changes
+        localStorage.setItem('user', JSON.stringify(state.currentUser));
       }
+      state.loading = false;
+      state.error = null;
+    },
+    
+    updateUserFailure: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
     },
 
 
@@ -88,7 +104,9 @@ export const {
   signInSuccess, 
   signInFailure, 
   signOut, 
-  updateUserAvatar,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
