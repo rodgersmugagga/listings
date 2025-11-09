@@ -15,7 +15,22 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+        connectSrc: ["'self'", process.env.VITE_API_URL || "*"],
+        fontSrc: ["'self'", "https:", "data:"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+  })
+);
 app.use(cors());
 app.use(express.json());
 
