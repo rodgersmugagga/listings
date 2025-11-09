@@ -20,10 +20,16 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "https://apis.google.com",
+          "https://www.gstatic.com"
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
-        connectSrc: ["'self'", process.env.VITE_API_URL || "*"],
+        connectSrc: ["'self'", process.env.VITE_API_URL || "*", "https://*.firebaseio.com", "https://*.googleapis.com", "https://*.gstatic.com"],
         fontSrc: ["'self'", "https:", "data:"],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
@@ -31,6 +37,7 @@ app.use(
     },
   })
 );
+
 app.use(cors());
 app.use(express.json());
 
