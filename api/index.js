@@ -8,6 +8,7 @@ import Listing from './models/listing.model.js';
 import User from './models/user.model.js';
 import cors from 'cors';
 import helmet from 'helmet';
+import path from 'path';
 
 dotenv.config();
 
@@ -22,6 +23,14 @@ app.use(express.json());
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/listing", listingRouter);
+
+
+//
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+});
 
 
 // MongoDB connection
@@ -46,6 +55,10 @@ mongoose.connect(process.env.MONGO, {
   console.error('Error connecting to MongoDB:', error);
   process.exit(1);
 });
+
+//
+
+const __dirname = path.resolve();
 
 // Start server
 const PORT = process.env.PORT || 3000;
