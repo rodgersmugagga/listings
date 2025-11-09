@@ -31,6 +31,8 @@ export default function CreateListing() {
   // States for error and loading indicators
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   useEffect(()=> {
 
@@ -67,7 +69,7 @@ export default function CreateListing() {
 
     fetchListing();
 
-  }, []);
+  }, [params.listingId]);
 
   // Handles form field changes
   const handleChange = (e) => {
@@ -152,6 +154,45 @@ export default function CreateListing() {
     }
   };
 
+  // Handle file selection
+  const handleFileChange = (e) => {
+    setSelectedFiles(Array.from(e.target.files || []));
+  };
+
+  // Upload selected files to backend (which uses Cloudinary via multer-storage-cloudinary)
+  const handleUpload = async () => {
+    if (!selectedFiles.length) return setError('No files selected');
+
+    try {
+      setUploading(true);
+      setError(false);
+      const token = currentUser?.token;
+      const fd = new FormData();
+      selectedFiles.slice(0, 6).forEach((file) => fd.append('images', file));
+
+      const res = await fetch('/api/listing/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token || ''}`,
+        },
+        body: fd,
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.success === false) {
+        setError(data.message || 'Upload failed');
+        setUploading(false);
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, imageUrls: data.imageUrls }));
+      setUploading(false);
+    } catch (err) {
+      setError(err.message);
+      setUploading(false);
+    }
+  };
+
   return (
     <main className='max-w-4xl mx-auto p-3'>
       <h1 className='text-3xl font-semibold text-center my-7'>Update a Listing</h1>
@@ -225,12 +266,22 @@ export default function CreateListing() {
           <span className='font-normal text-gray-600 ml-2'>The first image will be the cover (max 6)</span>
 
           <div className='flex gap-4'>
-            <input className='p-3 border border-gray-300 rounded-lg w-full' type="file" id="images" accept="image/*" multiple />
-            <button type="button" className='text-green-700 border border-green-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>Upload</button>
+            <input onChange={handleFileChange} className='p-3 border border-gray-300 rounded-lg w-full' type="file" id="images" accept="image/*" multiple />
+            <button type="button" onClick={handleUpload} disabled={uploading} className='text-green-700 border border-green-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>
+              {uploading ? 'Uploading...' : 'Upload'}
+            </button>
           </div>
 
+          {formData.imageUrls?.length > 0 && (
+            <div className='flex gap-2 flex-wrap mt-2'>
+              {formData.imageUrls.map((url) => (
+                <img key={url} src={url} alt="preview" className='h-20 w-20 object-cover rounded-md' />
+              ))}
+            </div>
+          )}
+
           {/* Main submit button */}
-          <button disabled={loading} className='text-white bg-slate-700 p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4'>
+          <button type="submit" disabled={loading} className='text-white bg-slate-700 p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4'>
             {loading ? "Updating..." : "Update Listing"}
           </button>
 

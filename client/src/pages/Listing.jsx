@@ -56,12 +56,16 @@ export default function Listing() {
   return (
     <main>
       <Swiper navigation>
-        {listing.imageUrls?.map((url) => (
-          <SwiperSlide key={url}>
-            <div
-              className="h-[550px]"
-              style={{ background: `url(${url}) center no-repeat`, backgroundSize: 'cover' }}
-            ></div>
+        {listing.imageUrls?.map((url, idx) => (
+          <SwiperSlide key={`${url}-${idx}`}>
+            {/* Use an actual <img> for proper lazy-loading and accessible alt text */}
+            <img
+              src={url}
+              alt={`${listing.name} image`}
+              loading="lazy"
+              decoding="async"
+              className="h-[550px] w-full object-cover"
+            />
           </SwiperSlide>
         ))}
       </Swiper>

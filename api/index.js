@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
+import Listing from './models/listing.model.js';
+import User from './models/user.model.js';
 import cors from 'cors';
 import helmet from 'helmet';
 
@@ -29,6 +31,17 @@ mongoose.connect(process.env.MONGO, {
   serverSelectionTimeoutMS: 5000
 }).then(() => {
   console.log('Connected to MongoDB');
+  // Ensure indexes are synchronized on startup for predictable query performance.
+  // syncIndexes will create any indexes defined on the schema that are missing, and
+  // remove indexes that are no longer defined.
+  Promise.all([
+    Listing.syncIndexes(),
+    User.syncIndexes()
+  ]).then((res) => {
+    console.log('Indexes synchronized:', res.map(r => Object.keys(r || {})));
+  }).catch((err) => {
+    console.error('Error syncing indexes:', err);
+  });
 }).catch((error) => {
   console.error('Error connecting to MongoDB:', error);
   process.exit(1);

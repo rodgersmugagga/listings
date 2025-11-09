@@ -20,11 +20,11 @@ export default function ListingItem({ listing }) {
             <p className='text-sm text-gray-500 truncate w-full'>{listing.address}</p>
           </div>
           <p className='text-sm text-gray-600 truncate'>{listing.description}</p>
-          <p className=' text-gray-600 font-semibold mt-2'>
+          <div className=' text-gray-600 font-semibold mt-2'>
             {listing.offer && (
-              <p className='text-sm text-gray-500 truncate w-full'>UGX { (Number(listing.regularPrice) - Number(listing.discountedPrice)).toLocaleString('en-US') }{listing.type === 'rent' && ' / month'}</p>
+              <span className='text-sm text-gray-500 truncate w-full'>UGX { (Number(listing.regularPrice) - Number(listing.discountedPrice)).toLocaleString('en-US') }{listing.type === 'rent' && ' / month'}</span>
             )}
-          </p>
+          </div>
           <div className='text-slate-700 flex gap-4'>
             <div className='font-bold text-xs'>
               {listing.bedrooms > 1 ? `${listing.bedrooms} beds` : `${listing.bedrooms} bed`}

@@ -133,15 +133,16 @@ const handleShowListings = async () => {
 
     const data = await res.json();
 
-    if (!res.ok || data.success === false) {
+    if (!res.ok) {
       setShowListingError(true);
-      
-      console.error("Listing fetch failed:", data.message);
-      alert(data.message || "Failed get listings!");
+      console.error("Listing fetch failed:", data?.message || data);
+      alert(data?.message || 'Failed to get listings!');
       return;
     }
 
-    setUserListings(data);
+    // API returns { listings: [...] }
+    const listings = Array.isArray(data) ? data : data?.listings ?? [];
+    setUserListings(listings);
     
 
   } catch (error) {
@@ -168,18 +169,17 @@ const handleListingDelete = async (listingId) => {
 });
 
     const data = await res.json();
-
-    if (!res.ok || data.success === false) {
-      
-      console.error("Delete failed:", data.message);
-      alert(data.message || "Failed to delete listing!");
+    if (!res.ok) {
+      console.error("Delete failed:", data?.message || data);
+      alert(data?.message || 'Failed to delete listing!');
       return;
     }
 
-    setUserListings((prev)=>prev.filter((listing)=>listing._id !== listingId));
+    // Update local list (ensure array)
+    setUserListings((prev) => Array.isArray(prev) ? prev.filter((listing) => listing._id !== listingId) : []);
 
-    console.log("Listing deleted successfully:", data.message);
-    alert(data.message || "Listing deleted successfully!");
+    console.log("Listing deleted successfully:", data);
+    alert((data && (data.message || data)) || 'Listing deleted successfully!');
     
 
   } catch (error) {

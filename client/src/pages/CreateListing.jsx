@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
@@ -28,6 +28,9 @@ export default function CreateListing() {
   // States for error and loading indicators
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  // selectedFiles will be an array of objects: { file: File, preview: string }
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   // Handles form field changes
   const handleChange = (e) => {
@@ -66,7 +69,7 @@ export default function CreateListing() {
 
 
       
-      const token = currentUser?.token;
+  const token = currentUser?.token;
 
 
       //Validate image upload
@@ -108,6 +111,75 @@ export default function CreateListing() {
     } catch (error) {
       setError(error.message);
       setLoading(false); // corrected from loading(false)
+    }
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    // map to objects with preview URLs
+    const mapped = files.map((file) => ({ file, preview: URL.createObjectURL(file) }));
+    // append to existing selected files (but limit client-side to 6 total)
+    setSelectedFiles((prev) => {
+      const combined = [...prev, ...mapped];
+      return combined.slice(0, 6);
+    });
+  };
+
+  // Remove a selected file by index and revoke the object URL
+  const removeSelectedFile = (index) => {
+    setSelectedFiles((prev) => {
+      const item = prev[index];
+      if (item && item.preview) URL.revokeObjectURL(item.preview);
+      const next = prev.filter((_, i) => i !== index);
+      return next;
+    });
+  };
+
+  // cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Upload selected files to backend (which uses Cloudinary via multer-storage-cloudinary)
+  const handleUpload = async () => {
+    if (!selectedFiles.length) return setError('No files selected');
+
+    try {
+      setUploading(true);
+      setError(false);
+      const token = currentUser?.token;
+      const fd = new FormData();
+      // selectedFiles contains objects with .file
+      selectedFiles.slice(0, 6).forEach((item) => fd.append('images', item.file));
+
+      const res = await fetch('/api/listing/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token || ''}`,
+        },
+        body: fd,
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.success === false) {
+        setError(data.message || 'Upload failed');
+        setUploading(false);
+        return;
+      }
+
+      // revoke previews after successful upload
+      selectedFiles.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
+
+      setFormData((prev) => ({ ...prev, imageUrls: data.imageUrls }));
+      setSelectedFiles([]);
+      setUploading(false);
+    } catch (err) {
+      setError(err.message);
+      setUploading(false);
     }
   };
 
@@ -184,12 +256,41 @@ export default function CreateListing() {
           <span className='font-normal text-gray-600 ml-2'>The first image will be the cover (max 6)</span>
 
           <div className='flex gap-4'>
-            <input className='p-3 border border-gray-300 rounded-lg w-full' type="file" id="images" accept="image/*" multiple />
-            <button type="button" className='text-green-700 border border-green-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>Upload</button>
+            <input onChange={handleFileChange} className='p-3 border border-gray-300 rounded-lg w-full' type="file" id="images" accept="image/*" multiple />
+            <button type="button" onClick={handleUpload} disabled={uploading} className='text-green-700 border border-green-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>
+              {uploading ? 'Uploading...' : 'Upload'}
+            </button>
           </div>
 
+          {/* Selected file previews with delete buttons (before upload) */}
+          {selectedFiles.length > 0 && (
+            <div className='flex gap-2 flex-wrap mt-2 items-center'>
+              {selectedFiles.map((item, idx) => (
+                <div key={item.preview} className='relative'>
+                  <img src={item.preview} alt={`preview-${idx}`} className='h-20 w-20 object-cover rounded-md' />
+                  <button
+                    type='button'
+                    onClick={() => removeSelectedFile(idx)}
+                    className='absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center'
+                    aria-label={`Remove selected image ${idx + 1}`}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {formData.imageUrls?.length > 0 && (
+            <div className='flex gap-2 flex-wrap mt-2'>
+              {formData.imageUrls.map((url) => (
+                <img key={url} src={url} alt="preview" className='h-20 w-20 object-cover rounded-md' />
+              ))}
+            </div>
+          )}
+
           {/* Main submit button */}
-          <button disabled={loading} className='text-white bg-slate-700 p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4'>
+          <button type="submit" disabled={loading} className='text-white bg-slate-700 p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4'>
             {loading ? "Creating..." : "Create Listing"}
           </button>
 

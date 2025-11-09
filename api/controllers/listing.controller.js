@@ -151,3 +151,20 @@ export const getListings = async (req, res, next) => {
   }
 
 }
+
+// Upload images for a listing (uses multer + multer-storage-cloudinary)
+export const uploadImages = async (req, res, next) => {
+  try {
+    // multer will put uploaded files on req.files
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No files uploaded' });
+    }
+
+    // Each file object from multer-storage-cloudinary typically contains `path` which is the secure URL
+    const imageUrls = req.files.map((f) => f.path || f.secure_url || f.url).filter(Boolean);
+
+    return res.status(200).json({ success: true, imageUrls });
+  } catch (error) {
+    next(error);
+  }
+};
