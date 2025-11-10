@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async';
 
 export default function CreateListing() {
 
@@ -73,7 +74,7 @@ export default function CreateListing() {
 
 
       //Validate image upload
-      //if (formData.imageUrls.length < 1) return setError("You must upload at least 1 image!");
+      if (formData.imageUrls.length < 1) return setError("You must upload at least 1 image!");
       
       // Validate discounted price
       if (+formData.regularPrice < +formData.discountedPrice) {
@@ -185,7 +186,44 @@ export default function CreateListing() {
 
   return (
     <main className='max-w-4xl mx-auto p-3'>
-      <h1 className='text-3xl font-semibold text-center my-7'>Create a Listing</h1>
+
+      <Helmet>
+        <title>Create a Real Estate Listing in Uganda | Rodvers Listings</title>
+        <meta
+          name="description"
+          content="Create and publish your real estate listing in Uganda. Upload property images, set rent or sale prices, and reach thousands of buyers on Rodvers Listings."
+        />
+        <meta
+          name="keywords"
+          content="create listing Uganda, post property Uganda, rent listing Uganda, sale listing Uganda, Rodvers Listings"
+        />
+        <link rel="canonical" href={window.location.href} />
+
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": formData.name || "Property Listing",
+            "description": formData.description || "Create a property listing on Rodvers Listings by CEO Rodgers Mugagga.",
+            "image": formData.imageUrls || [],
+            "brand": {
+              "@type": "Organization",
+              "name": "Rodvers Tech Ltd",
+              "founder": "Rodgers Mugagga",
+              "url": "https://rodvers.com"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": formData.offer ? formData.discountedPrice : formData.regularPrice,
+              "priceCurrency": "UGX",
+              "availability": "https://schema.org/InStock"
+            }
+          })}
+        </script>
+
+      </Helmet>
+
+      <h1 className='text-3xl font-semibold text-center my-7'> Create a Listing in Uganda</h1>
 
       {/* fixed: changed onClick → onSubmit */}
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
@@ -230,7 +268,7 @@ export default function CreateListing() {
               <p>Baths</p>
             </div>
             <div className='flex gap-2 items-center'>
-              <input type="number" className="border border-gray-300 rounded-lg" id="regularPrice" min="150000" max="3000000" required onChange={handleChange} value={formData.regularPrice} />
+              <input type="number" className="border border-gray-300 rounded-lg" id="regularPrice" min="150000" required onChange={handleChange} value={formData.regularPrice} />
               <div className='flex flex-col items-center'>
                 <p>Regular Price</p>
                 <span className='text-xs'>Ugx / month</span>
@@ -240,7 +278,7 @@ export default function CreateListing() {
             {/* Discounted price shown only if offer checked */}
             {formData.offer && (
               <div className='flex gap-2 items-center'>
-                <input type="number" className="border border-gray-300 rounded-lg" id="discountedPrice" min="0" max="100000" required onChange={handleChange} value={formData.discountedPrice} />
+                <input type="number" className="border border-gray-300 rounded-lg" id="discountedPrice" min="0" required onChange={handleChange} value={formData.discountedPrice} />
                 <div className='flex flex-col items-center'>
                   <p>Discounted Price</p>
                   <span className='text-xs'>Ugx / month</span>
@@ -267,7 +305,12 @@ export default function CreateListing() {
             <div className='flex gap-2 flex-wrap mt-2 items-center'>
               {selectedFiles.map((item, idx) => (
                 <div key={item.preview} className='relative'>
-                  <img src={item.preview} alt={`preview-${idx}`} className='h-20 w-20 object-cover rounded-md' />
+                  <img
+                    src={item.preview}
+                    alt={`Property image preview ${idx + 1} for ${formData.name || 'real estate listing in Uganda'}`}
+                    className='h-20 w-20 object-cover rounded-md'
+                  />
+
                   <button
                     type='button'
                     onClick={() => removeSelectedFile(idx)}
