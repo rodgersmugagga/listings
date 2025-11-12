@@ -72,8 +72,8 @@ export default function CreateListing() {
     try {
       const token = currentUser?.token;
 
-      // Validate image upload
-      if (formData.imageUrls.length < 1) return setError("You must upload at least 1 image!");
+  // Validate image upload (defensive: imageUrls may be undefined)
+  if (!formData.imageUrls || formData.imageUrls.length < 1) return setError("You must upload at least 1 image!");
       
       // Validate discounted price
       if (+formData.regularPrice < +formData.discountedPrice) {
@@ -188,7 +188,8 @@ export default function CreateListing() {
       // revoke previews after successful upload
       selectedFiles.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
 
-  setFormData((prev) => ({ ...prev, imageUrls: data.imageUrls, imagePublicIds: data.publicIds || [] }));
+    // Ensure imageUrls is always an array (defensive against unexpected API responses)
+    setFormData((prev) => ({ ...prev, imageUrls: data.imageUrls || [], imagePublicIds: data.publicIds || [] }));
       setSelectedFiles([]);
       setUploading(false);
     } catch (err) {

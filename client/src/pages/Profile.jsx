@@ -291,7 +291,7 @@ const handleListingDelete = async (listingId) => {
           alt={`${currentUser?.user?.username}'s profile`}
           onError={(e) => {
             e.target.onerror = null; // Prevent infinite loop
-            e.target.src = "https://avatars.githubusercontent.com/u/219873324?s=400&u=101a5f849e9b243737aee4b3b950c700272efb4b&v=4";
+            e.target.src = "/favicon.svg";
           }}
         />
         
@@ -337,7 +337,7 @@ const handleListingDelete = async (listingId) => {
       >
         <Link to={`/listing/${listing._id}`}>
           <img
-            src={listing.imageUrls?.[0] || "/placeholder.jpg"}
+            src={listing.imageUrls?.[0] || "/favicon.svg"}
             alt="Listing cover image"
             className="h-16 w-16 object-contain"
           />

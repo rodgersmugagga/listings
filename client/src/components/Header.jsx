@@ -54,9 +54,9 @@ export default function Header() {
           <Link to='/about' className="text-slate-700 hover:underline">About</Link>
           <Link to='/profile' className="flex-shrink-0">
             {currentUser ? (
-              <img
-                className='rounded-full h-7 w-7 object-cover flex-shrink-0'
-                src={currentUser?.user?.avatar || "https://avatars.githubusercontent.com/u/219873324?s=400&u=101a5f849e9b243737aee4b3b950c700272efb4b&v=4"}
+                            <img
+                className="rounded-full h-7 w-7"
+                src={currentUser?.user?.avatar || "/favicon.svg"}
                 alt="profile"
               />
             ) : (

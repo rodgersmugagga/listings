@@ -131,7 +131,7 @@ export default function Home() {
           </div>
           <div className="hidden md:block">
             <img
-              src="https://picsum.photos/id/1025/900/600"
+              src="/favicon.svg"
               alt="Buy and sell across Uganda"
               className="rounded-lg shadow-md w-full object-cover"
               loading="lazy"

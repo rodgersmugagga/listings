@@ -42,6 +42,7 @@ app.use(
           "data:",
           "https://res.cloudinary.com",
           "https://lh3.googleusercontent.com", // Google avatars
+          "https://avatars.githubusercontent.com", // GitHub avatars
         ],
 
         connectSrc: [
