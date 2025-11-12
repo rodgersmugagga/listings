@@ -41,6 +41,7 @@ app.use(
           "'self'",
           "data:",
           "https://res.cloudinary.com",
+          "https://*.res.cloudinary.com",
           "https://lh3.googleusercontent.com", // Google avatars
           "https://avatars.githubusercontent.com", // GitHub avatars
         ],
@@ -50,6 +51,7 @@ app.use(
           process.env.VITE_API_URL || "*",
           "https://*.firebaseio.com",
           "https://res.cloudinary.com",
+          "https://*.res.cloudinary.com",
           "https://*.googleapis.com",
           "https://*.gstatic.com",
           "https://*.googleusercontent.com",
