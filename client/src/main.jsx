@@ -7,22 +7,20 @@ import App from "./App.jsx";
 import "./index.css";
 import { store, persistor } from "./redux/store.js";
 
-// Register Service Worker for offline support and caching
-if ('serviceWorker' in navigator) {
-  // Register from the public folder
-  navigator.serviceWorker.register('/sw.js', {
-    scope: '/',
-  })
-    .then((registration) => {
-      console.log('✅ Service Worker registered:', registration);
-      
-      // Check for updates periodically
-      setInterval(() => {
-        registration.update();
-      }, 60000); // Check every minute
+// Service worker registration removed to avoid stale cached assets in production.
+// Proactively attempt to unregister any existing service workers on app load so
+// previously-controlled clients stop serving stale cached assets immediately.
+if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+  // best-effort: ignore errors and continue boot
+  navigator.serviceWorker.getRegistrations()
+    .then((registrations) => {
+      registrations.forEach((reg) => {
+        // unregister returns a promise; swallow any promise errors
+        reg.unregister().catch(() => {});
+      });
     })
-    .catch((error) => {
-      console.warn('⚠️ Service Worker registration failed:', error);
+    .catch(() => {
+      /* ignore */
     });
 }
 

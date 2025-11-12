@@ -19,62 +19,62 @@ const app = express();
 // Helmet Security Policy – Firebase & Google Sign-In compatible
 app.use(
   helmet({
-    contentSecurityPolicy: false //{
-    //   directives: {
-    //     defaultSrc: ["'self'"],
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
 
-    //     scriptSrc: [
-    //       "'self'",
-    //       "'unsafe-inline'",
-    //       "'unsafe-eval'",
-    //       "https://apis.google.com",
-    //       "https://www.gstatic.com",
-    //     ],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "https://apis.google.com",
+          "https://www.gstatic.com",
+        ],
 
-    //     styleSrc: [
-    //       "'self'",
-    //       "'unsafe-inline'",
-    //       "https://fonts.googleapis.com",
-    //     ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+        ],
 
-    //     imgSrc: [
-    //       "'self'",
-    //       "data:",
-    //       "https://res.cloudinary.com",
-    //       "https://*.res.cloudinary.com",
-    //       "https://lh3.googleusercontent.com", // Google avatars
-    //       "https://avatars.githubusercontent.com", // GitHub avatars
-    //     ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://res.cloudinary.com",
+          "https://*.res.cloudinary.com",
+          "https://lh3.googleusercontent.com", // Google avatars
+          "https://avatars.githubusercontent.com", // GitHub avatars
+        ],
 
-    //     connectSrc: [
-    //       "'self'",
-    //       process.env.VITE_API_URL || "*",
-    //       "https://*.firebaseio.com",
-    //       "https://res.cloudinary.com",
-    //       "https://*.res.cloudinary.com",
-    //       "https://*.googleapis.com",
-    //       "https://*.gstatic.com",
-    //       "https://*.googleusercontent.com",
-    //     ],
+        connectSrc: [
+          "'self'",
+          process.env.VITE_API_URL || "*",
+          "https://*.firebaseio.com",
+          "https://res.cloudinary.com",
+          "https://*.res.cloudinary.com",
+          "https://*.googleapis.com",
+          "https://*.gstatic.com",
+          "https://*.googleusercontent.com",
+        ],
 
-    //     fontSrc: [
-    //       "'self'",
-    //       "https:",
-    //       "data:",
-    //     ],
+        fontSrc: [
+          "'self'",
+          "https:",
+          "data:",
+        ],
 
-    //     frameSrc: [
-    //       "'self'",
-    //       "https://accounts.google.com",
-    //       "https://*.firebaseapp.com",
-    //     ],
+        frameSrc: [
+          "'self'",
+          "https://accounts.google.com",
+          "https://*.firebaseapp.com",
+        ],
 
-    //     frameAncestors: ["'self'", "https://accounts.google.com"],
+        frameAncestors: ["'self'", "https://accounts.google.com"],
 
-    //     objectSrc: ["'none'"],
-    //     upgradeInsecureRequests: [],
-    //   },
-    // },
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
   })
 );
 
