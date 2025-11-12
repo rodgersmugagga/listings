@@ -245,14 +245,18 @@ export default function UpdateListing() {
         body: fd,
       });
 
-      const data = await res.json();
-      if (!res.ok || data.success === false) {
-        setError(data.message || 'Upload failed');
-        setUploading(false);
-        return;
-      }
+        const data = await res.json();
+        if (!res.ok || data.success === false) {
+          setError(data.message || 'Upload failed');
+          setUploading(false);
+          return;
+        }
 
-    setFormData((prev) => ({ ...prev, imageUrls: data.imageUrls, imagePublicIds: data.publicIds || [] }));
+        // Normalize response
+        const imageUrlsFromResp = data.imageUrls || (Array.isArray(data.images) ? data.images.map(i => i.url) : []);
+        const publicIdsFromResp = data.publicIds || (Array.isArray(data.images) ? data.images.map(i => i.public_id || i.publicId) : []);
+
+        setFormData((prev) => ({ ...prev, imageUrls: [...(prev.imageUrls || []), ...imageUrlsFromResp], imagePublicIds: [...(prev.imagePublicIds || []), ...publicIdsFromResp] }));
       setUploading(false);
     } catch (err) {
       setError(err.message);

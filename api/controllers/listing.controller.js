@@ -145,7 +145,11 @@ export const uploadImages = async (req, res, next) => {
       });
     }
 
-    return res.status(200).json({ success: true, images: uploadedImages });
+    // Normalize response to be friendly to multiple frontends
+    const imageUrls = uploadedImages.map(i => i.url);
+    const publicIds = uploadedImages.map(i => i.public_id);
+
+    return res.status(200).json({ success: true, images: uploadedImages, imageUrls, publicIds });
   } catch (error) {
     console.error('Upload images error:', error);
     next(error);
