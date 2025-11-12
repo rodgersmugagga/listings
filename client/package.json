@@ -3,18 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Local listings app for properties, vehicles, and electronics in Mbarara, Kampala, Masaka, jinja and nearby areas, optimized for local search and fast loading.",
-  "keywords": [
-    "local listings",
-    "apartments for rent Mbarara",
-    "houses for sale Mbarara",
-    "cars for sale Mbarara",
-    "electronics in Mbarara",
-    "property listings Uganda",
-    "real estate Uganda",
-    "vehicles Uganda",
-    "mobile phones Uganda"
-  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -31,9 +19,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.1",
     "redux-persist": "^6.0.0",
-    "swiper": "^12.0.3",
-    "react-structured-data": "^1.0.0",
-    "sitemap": "^7.0.0"
+    "swiper": "^12.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
