@@ -6,32 +6,10 @@ export default function LazyImage({ src, alt, className = '', style = {}, onLoad
   const imgRef = useRef(null);
 
   useEffect(() => {
-    // Use Intersection Observer for lazy loading
+    // Eager load: set the image src immediately without waiting for intersection
+    // This bypasses intersection observer to diagnose if that's causing issues
     if (!src) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            // Trigger image load when element is visible
-            setImageSrc(src);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: '50px' } // Start loading 50px before element enters viewport
-    );
-
-    const currentImg = imgRef.current;
-    if (currentImg) {
-      observer.observe(currentImg);
-    }
-
-    return () => {
-      if (currentImg) {
-        observer.unobserve(currentImg);
-      }
-    };
+    setImageSrc(src);
   }, [src]);
 
   const handleLoad = () => {
