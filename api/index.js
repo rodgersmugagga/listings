@@ -49,6 +49,7 @@ app.use(
           "'self'",
           process.env.VITE_API_URL || "*",
           "https://*.firebaseio.com",
+          "https://res.cloudinary.com",
           "https://*.googleapis.com",
           "https://*.gstatic.com",
           "https://*.googleusercontent.com",
