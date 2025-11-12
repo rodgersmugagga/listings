@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async"; // Import Helmet for SEO
 import { 
   deleteUserFailure, 
   deleteUserStart, 
@@ -237,7 +238,22 @@ const handleListingDelete = async (listingId) => {
 
 
   return (
-    <div>
+    <>
+      <Helmet>
+        <title>My Profile | Manage Listings - Rodvers</title>
+        <meta
+          name="description"
+          content="Manage your Rodvers Listings profile. Edit your information, update listings, view your ads, and connect with buyers."
+        />
+        <meta
+          name="keywords"
+          content="my profile, manage listings, user profile, profile settings"
+        />
+        <meta name="robots" content="noindex, follow" />
+        <link rel="canonical" href="https://listings-chvc.onrender.com/profile" />
+      </Helmet>
+
+      <div>
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       
       {/* Success message */}
@@ -347,5 +363,6 @@ const handleListingDelete = async (listingId) => {
 
 
     </div>
+    </>
   );
 }

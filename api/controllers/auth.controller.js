@@ -14,10 +14,29 @@ export const signup = async(req, res) => {
       //get user input
       const {username, email, password} = req.body;
 
+      // Validate input
+      if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Username, email, and password are required' });
+      }
+
+      if (password.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters' });
+      }
+
+      if (!email.includes('@')) {
+        return res.status(400).json({ message: 'Invalid email format' });
+      }
+
       //check if user already exists
       let user = await User.findOne({ email });
       if(user) {
-        return res.status(400).json({ message: 'User already exists' });
+        return res.status(400).json({ message: 'Email already registered' });
+      }
+
+      // Check if username is taken
+      let userByUsername = await User.findOne({ username });
+      if(userByUsername) {
+        return res.status(400).json({ message: 'Username already taken' });
       }
 
       //hash password
@@ -35,10 +54,16 @@ export const signup = async(req, res) => {
       await newUser.save(); 
 
       //return a success response
-      res.status(201).json("User successfully created!");
+      const { password: pass, ...userData } = newUser._doc;
+      res.status(201).json({ 
+        success: true,
+        message: 'User successfully created!',
+        user: userData 
+      });
 
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Signup error:', error);
+        res.status(500).json({ message: error.message || 'Server error during signup' });
     }
 
 };
@@ -115,7 +140,7 @@ export const google = async (req, res, next) => {
       const baseUsername = (username || 'user').split(' ').join('').toLowerCase();
       
       // Ensure we have a valid photo URL or use the default avatar
-      const avatar = photo || "https://avatars.githubusercontent.com/u/219873324?s=400&u=101a5f849e9b243737aee4b3b950c700272efb4b&v=4";
+      const avatar = photo || "https://res.cloudinary.com/dnj7dtnvx/image/upload/v1760363461/samples/zoom.avif";
       
       const newUser = new User({
         username: baseUsername + Math.random().toString(36).slice(-4),

@@ -2,10 +2,16 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // uses localStorage by default
 import userReducer from "./user/userSlice.js";
+import listingsReducer from './listings/listingsSlice.js';
+import filtersReducer from './filters/filtersSlice.js';
+import favoritesReducer from './favorites/favoritesSlice.js';
 
 // Combine all reducers (you can add more later)
 const rootReducer = combineReducers({
   user: userReducer,
+  listings: listingsReducer,
+  filters: filtersReducer,
+  favorites: favoritesReducer,
 });
 
 // Configuration for redux-persist

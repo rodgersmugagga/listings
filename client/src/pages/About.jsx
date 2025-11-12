@@ -13,30 +13,91 @@ const About = () => {
       }}
     >
       <Helmet>
-        <title>About Rodvers Tech Ltd - Rodgers Mugagga, CEO & Founder</title>
+        <title>About Rodvers Tech Ltd | Rodgers Mugagga, Founder & CEO</title>
         <meta
           name="description"
-          content="Learn about Rodvers Tech Ltd, founded by Rodgers Mugagga, CEO & Founder. We empower Africa with digital solutions including Rodvers Listings and Mangu Mangu."
+          content="Discover Rodvers Tech Ltd, founded by Rodgers Mugagga. We're empowering Africa with digital solutions including Rodvers Listings - Uganda's top marketplace for real estate, vehicles, and electronics."
         />
         <meta
           name="keywords"
-          content="Rodgers Mugagga, CEO, Founder, Rodvers Tech Ltd, Rodvers Listings, Mangu Mangu, digital solutions Uganda, African technology, tech startup"
+          content="Rodgers Mugagga, CEO, Founder, Rodvers Tech Ltd, Rodvers Listings, digital solutions Uganda, African technology, tech startup, innovation"
         />
+        <meta name="author" content="Rodgers Mugagga" />
+        <link rel="canonical" href="https://listings-chvc.onrender.com/about" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="About Rodvers Tech Ltd | Rodgers Mugagga" />
+        <meta property="og:description" content="Learn about Rodvers Tech Ltd and our mission to empower Africa with innovative digital solutions." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://listings-chvc.onrender.com/about" />
+        <meta property="og:site_name" content="Rodvers Listings" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="About Rodvers Tech Ltd" />
+        <meta name="twitter:description" content="Learn about Rodvers Tech Ltd and founder Rodgers Mugagga's mission to empower Africa." />
+        <meta name="twitter:creator" content="@rodgersmugagga" />
+        
+        {/* Additional SEO */}
+        <meta name="robots" content="index, follow" />
+        <meta name="language" content="English" />
+        
+        {/* Structured Data - Organization */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "Rodvers Tech Ltd",
-            "url": "https://yourwebsite.com",
-            "logo": "https://yourwebsite.com/logo.png",
+            "url": "https://listings-chvc.onrender.com",
+            "logo": "https://listings-chvc.onrender.com/logo.png",
+            "description": "Empowering Africa with digital solutions",
             "founder": {
               "@type": "Person",
               "name": "Rodgers Mugagga",
               "jobTitle": "CEO & Founder",
-              "email": "rodgersmugagga68@gmail.com"
+              "email": "rodgersmugagga68@gmail.com",
+              "url": "https://rodgers-mugagga-portfolio.netlify.app",
+              "sameAs": [
+                "https://github.com/rodgersmugagga",
+                "https://linkedin.com/in/rodgersmugagga",
+                "https://twitter.com/rodgersmugagga"
+              ]
             },
             "sameAs": [
-              "https://www.linkedin.com/in/rodgersmugagga",
+              "https://www.facebook.com/rodverstech",
+              "https://twitter.com/rodverstech"
+            ],
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "UG",
+              "addressRegion": "Uganda"
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "Customer Support",
+              "email": "support@rodvers.com"
+            }
+          })}
+        </script>
+        
+        {/* Structured Data - Person (Founder) */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Rodgers Mugagga",
+            "jobTitle": "Founder & CEO",
+            "description": "Tech entrepreneur and founder of Rodvers Tech Ltd",
+            "url": "https://rodgers-mugagga-portfolio.netlify.app",
+            "email": "rodgersmugagga68@gmail.com",
+            "affiliation": {
+              "@type": "Organization",
+              "name": "Rodvers Tech Ltd",
+              "url": "https://listings-chvc.onrender.com"
+            },
+            "sameAs": [
+              "https://github.com/rodgersmugagga",
+              "https://linkedin.com/in/rodgersmugagga",
               "https://twitter.com/rodgersmugagga"
             ]
           })}
@@ -76,17 +137,9 @@ const About = () => {
           Our expertise in both software and hardware ensures seamless experiences, empowering businesses and individuals to thrive confidently.
         </p>
 
-        <p style={{ fontSize: "1.1rem", color: "#1a73e8", marginBottom: "10px" }}>
-          Explore <strong>Rodvers Listings</strong>:{" "}
-          <Link 
-            to="/" 
-            style={{ 
-              color: "#1a73e8", 
-              textDecoration: "none", 
-              fontWeight: "bold", 
-              borderBottom: "2px solid #1a73e8" 
-            }}
-          >
+        <p className="text-sm sm:text-base text-brand-600 mb-2">
+          Explore <strong>Rodvers Listings</strong>: {" "}
+          <Link to="/" className="text-brand-600 no-underline font-bold border-b-2 border-brand-600">
             Visit Listings
           </Link>
         </p>

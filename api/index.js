@@ -9,6 +9,9 @@ import User from './models/user.model.js';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
+import compressionMiddleware from './middlewares/compression.js';
+import { cacheMiddleware } from './middlewares/cache.js';
+import imageOptimizationMiddleware from './middlewares/imageOptimization.js';
 
 dotenv.config();
 const app = express();
@@ -70,6 +73,11 @@ app.use(
     },
   })
 );
+
+// ⚡ Performance Middleware
+app.use(compressionMiddleware); // Gzip/Brotli compression
+app.use(imageOptimizationMiddleware); // Image optimization helpers
+app.use(cacheMiddleware(300)); // Cache GET requests for 5 minutes
 
 app.use(cors());
 app.use(express.json());

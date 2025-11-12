@@ -1,280 +1,158 @@
 
 import { useEffect, useState } from 'react';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ListingItem from '../components/ListingItem';
 import { Helmet } from 'react-helmet-async';
+import { useDispatch, useSelector } from 'react-redux';
+import FiltersPanel from '../components/FiltersPanel';
+import { fetchListings } from '../redux/listings/listingsSlice.js';
+import { setPage } from '../redux/filters/filtersSlice.js';
 
 export default function Search() {
-  const [listings, setListings] = useState([]);
- //console.log(listings);
-  const [loading, setLoading] = useState(false);
-  const [showMore, setShowMore] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [sidebarData, setSidebarData] = useState({
-    searchTerm: '',
-    type: 'all',
-    parking: false,
-    furnished: false,
-    offer: false,
-    sort: 'createdAt',
-    order: 'desc',
+  const location = useLocation();
 
-});
-
+  const filters = useSelector(s => s.filters);
+  const { items: listings, total, status } = useSelector(s => s.listings || { items: [], total: 0, status: 'idle' });
+  const loading = status === 'loading';
+  const [showMore, setShowMore] = useState(false);
 //console.log(sidebarData);
 
 
-const handleChange =(e) => {
-  if(e.target.id === 'all' || e.target.id === 'rent' || e.target.id === 'sale'){
-    setSidebarData({...sidebarData, type: e.target.id});
-  }
-
-  if(e.target.id === 'searchTerm'){
-    setSidebarData({...sidebarData, searchTerm: e.target.value});
-  }
-
-  if(e.target.id === 'parking' || e.target.id === 'furnished' || e.target.id === 'offer'){
-    setSidebarData({...sidebarData, [e.target.id]: e.target.checked || e.target.checked === 'true' ? true : false,});
-  }
-
-  if(e.target.id === 'sort_order'){
-    const sort = e.target.value.split('_')[0] || 'created_at';
-    const order = e.target.value.split('_')[1] || 'desc';
-    setSidebarData({...sidebarData, sort, order});
-  }
-
-
-};
+// local handlers handled inside FiltersPanel; Search keeps URL sync and triggers fetch
 
   useEffect(() => {
-
+    // Sync URL params into Redux filters on first load
     const urlParams = new URLSearchParams(location.search);
-    const searchTermFromUrl = urlParams.get('searchTerm');
-    const typeFromUrl = urlParams.get('type');
-    const parkingFromUrl = urlParams.get('parking');
-    const offerFromUrl = urlParams.get('offer');
-    const furnishedFromUrl = urlParams.get('furnished');
-    const sortFromUrl = urlParams.get('sort');
-    const orderFromUrl = urlParams.get('order');
-    
+    const keyword = urlParams.get('searchTerm') || '';
+    const category = urlParams.get('category') || 'all';
+    const subCategory = urlParams.get('subCategory') || 'all';
+    const sort = urlParams.get('sort') || 'createdAt';
+    const page = Number(urlParams.get('page') || 1);
 
-    if(searchTermFromUrl || parkingFromUrl || offerFromUrl || furnishedFromUrl || sortFromUrl || orderFromUrl || typeFromUrl){
-      setSidebarData({
-        searchTerm: searchTermFromUrl || '',
-        type: typeFromUrl || 'all',
-        parking: parkingFromUrl === 'true' ? true : false,
-        offer: offerFromUrl === 'true' ? true : false,
-        furnished: furnishedFromUrl === 'true' ? true : false,
-        sort: sortFromUrl || 'created_at',
-        order: orderFromUrl || 'desc',
+    // naive sync: dispatch setPage only
+    dispatch(setPage(page));
 
-      });
-    }
-
-
-     const fetchListings = async () => {
-      const searchQuery = urlParams.toString();
-
-      try {
-        setShowMore(false);
-        setLoading(true);
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/get?${searchQuery}`);
-        const data = await res.json();
-
-        if (data.length > 8) {
-
-          setShowMore(true);
-        }else{
-          setShowMore(false);
-        }
-
-
-        setListings(data);
-        setLoading(false);
-      } catch (err) {
-        
-        console.error("Listings fetch error:", err.message);
-        setLoading(false);
-     
-     }
+    // Build params for API
+    const params = {
+      keyword,
+      category: category === 'all' ? undefined : category,
+      subCategory: subCategory === 'all' ? undefined : subCategory,
+      sort,
+      limit: filters.limit,
+      startIndex: (page - 1) * filters.limit,
+      filters: filters.filters,
     };
 
-    fetchListings();
+    dispatch(fetchListings(params));
+    setShowMore(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search, dispatch, filters.page]);
 
-  }, [location.search]);  
+  // when the search query changes, reset to first page
+  useEffect(() => {
+    // when URL search changes, reset page if needed
+  }, [location.search]);
 
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // prevent page reload
+  // Handle form submission - handled by FiltersPanel via onApply which should update URL
 
-    try {
-      const urlParams = new URLSearchParams();
-
-      urlParams.set('searchTerm', sidebarData.searchTerm);
-      urlParams.set('type', sidebarData.type);
-      urlParams.set('parking', sidebarData.parking);
-      urlParams.set('furnished', sidebarData.furnished);
-      urlParams.set('offer', sidebarData.offer);
-      urlParams.set('sort', sidebarData.sort);
-      urlParams.set('order', sidebarData.order);
-
-      const searchQuery = urlParams.toString();
-
-      navigate(`/search?${searchQuery}`);
-
-     } catch (error) {
-      console.log(error);
-     }
-  }; 
-
-  const onShowMoreClick = async () => {
-    const numberOfListing = listings.length;
-    const startIndex = numberOfListing;
-    const urlParams = new URLSearchParams();
-    urlParams.set('startIndex', startIndex);
-    const searchQuery = urlParams.toString();
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/get?${searchQuery}`);
-    const data = await res.json();
-    if (data.length < 9) {
-
-      setShowMore(false);
-    }
-
-    setListings([...listings, ...data]);
-
-    
-  }; 
+  const onShowMoreClick = () => {
+    const next = filters.page + 1;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set('page', String(next));
+    navigate(`/search?${urlParams.toString()}`);
+  };
 
 
   return (
-  <div className='flex flex-col md:flex-row'>
+  <div className='flex flex-col md:flex-row gap-4'>
 
     <Helmet>
-      <title>Search Properties in Uganda - Rent, Sale & Offers</title>
+      <title>Search Listings in Uganda | Real Estate, Vehicles, Electronics - Rodvers</title>
       <meta
         name="description"
-        content="Search properties for rent, sale, and offers in Uganda. Find apartments, houses, and commercial real estate across Kampala, Mbarara, Jinja, and more."
+        content="Search verified listings across Uganda for real estate, vehicles, and electronics. Find apartments, houses, cars, motorcycles, laptops and more. Rent or buy with verified sellers."
       />
       <meta
         name="keywords"
-        content="real estate Uganda, houses for sale, apartments for rent, property offers Uganda, rental homes East Africa"
+        content="search Uganda listings, real estate Uganda, houses for sale, apartments for rent, cars for sale Uganda, motorcycles Uganda, electronics Uganda, buy sell rent Uganda"
       />
+      <meta name="author" content="Rodvers Tech Ltd" />
       <link rel="canonical" href={window.location.href} />
 
       {/* Open Graph */}
-      <meta property="og:title" content="Search Properties in Uganda - Rent, Sale & Offers" />
+      <meta property="og:title" content="Search Listings in Uganda - Buy, Rent & Sell" />
       <meta
         property="og:description"
-        content="Search apartments, houses, and commercial real estate across Kampala, Mbarara, Jinja, and more."
+        content="Discover verified listings across Uganda. Find real estate, vehicles, electronics and more with Rodvers Listings."
       />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={window.location.href} />
       {listings?.[0] && <meta property="og:image" content={listings[0].imageUrls?.[0]} />}
-      <meta property="og:site_name" content="Real Estate Uganda" />
+      <meta property="og:site_name" content="Rodvers Listings" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Search Properties in Uganda - Rent, Sale & Offers" />
+      <meta name="twitter:title" content="Search Listings in Uganda - Buy, Rent & Sell" />
       <meta
         name="twitter:description"
-        content="Search apartments, houses, and commercial real estate across Kampala, Mbarara, Jinja, and more."
+        content="Discover verified listings for real estate, vehicles, electronics across Uganda with Rodvers Listings."
       />
       {listings?.[0] && <meta name="twitter:image" content={listings[0].imageUrls?.[0]} />}
+      
+      {/* Additional SEO */}
+      <meta name="robots" content="index, follow" />
+      <meta name="geo.region" content="UG" />
+      <meta name="geo.placename" content="Uganda" />
+      
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "ItemList",
-          "itemListElement": listings.map((listing, index) => ({
-            "@type": "ListItem",
-            "position": index + 1,
-            "url": `${window.location.origin}/listing/${listing._id}`,
-            "name": listing.name,
-            "image": listing.imageUrls?.[0],
-            "description": listing.description,
-            "offers": {
-              "@type": "Offer",
-              "price": listing.offer ? listing.discountedPrice : listing.regularPrice,
-              "priceCurrency": "UGX",
-              "availability": "https://schema.org/InStock"
-            }
-          }))
+          "@type": "CollectionPage",
+          "name": "Search Listings",
+          "description": "Search and discover verified listings across Uganda",
+          "url": window.location.href,
+          "mainEntity": {
+            "@type": "ItemList",
+            "itemListElement": listings.map((listing, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "url": `${window.location.origin}/listing/${listing._id}`,
+              "name": listing.name,
+              "image": listing.imageUrls?.[0],
+              "description": listing.description,
+              "offers": {
+                "@type": "Offer",
+                "price": listing.offer ? listing.discountedPrice : listing.regularPrice,
+                "priceCurrency": "UGX",
+                "availability": "https://schema.org/InStock"
+              }
+            }))
+          }
         })}
       </script>
     </Helmet>
 
-    <div className='p-7 border-b-2 md:border-r-2 md:min-h-screen'>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
-
-        <div className='flex items-center gap-2'>
-          <label className='whitespace-nowrap font-semibold'>Search Term: </label>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border w-full p-3 rounded-lg"
-            id="searchTerm"
-            onChange={handleChange}
-            value={sidebarData.searchTerm}
-          />
-        </div>
-
-        <div className='flex flex-wrap items-center gap-2'>
-          <label className='whitespace-nowrap font-semibold'>Type: </label>
-          <div className='flex gap-2'>
-            <input type="checkbox" className="w-5" id="all" onChange={handleChange} checked={sidebarData.type === 'all'} />
-            <span>Rent & Sale</span>
-          </div>
-          <div className='flex gap-2'>
-            <input type="checkbox" className="w-5" id="rent" onChange={handleChange} checked={sidebarData.type === 'rent'} />
-            <span>Rent</span>
-          </div>
-          <div className='flex gap-2'>
-            <input type="checkbox" className="w-5" id="sale" onChange={handleChange} checked={sidebarData.type === 'sale'} />
-            <span>Sale</span>
-          </div>
-          <div className='flex gap-2'>
-            <input type="checkbox" className="w-5" id="offer" onChange={handleChange} checked={sidebarData.offer} />
-            <span>Offer</span>
-          </div>
-        </div>
-
-        <div className='flex flex-wrap items-center gap-2'>
-          <label className='whitespace-nowrap font-semibold'>Amenities: </label>
-          <div className='flex gap-2'>
-            <input type="checkbox" className="w-5" id="parking" onChange={handleChange} checked={sidebarData.parking} />
-            <span>Parking</span>
-          </div>
-          <div className='flex gap-2'>
-            <input type="checkbox" className="w-5" id="furnished" onChange={handleChange} checked={sidebarData.furnished} />
-            <span>Furnished</span>
-          </div>
-        </div>
-
-        <div className='flex items-center gap-2'>
-          <label className='whitespace-nowrap font-semibold'>Sort: </label>
-          <select
-            onChange={handleChange}
-            defaultValue={'created_at_desc'}
-            className="border p-3 rounded-lg"
-            id="sort_order"
-          >
-            <option value='regularPrice_desc'>Price High to Low</option>
-            <option value='regularPrice_asc'>Price Low to High</option>
-            <option value='createdAt_desc'>Latest</option>
-            <option value='createdAt_asc'>Oldest</option>
-          </select>
-        </div>
-
-        <button className='text-white border bg-slate-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>
-          Search
-        </button>
-      </form>
+    <div className='p-3 md:p-0 md:w-80 md:border-r-2 md:border-b-0 border-b-2'>
+      <FiltersPanel onApply={() => {
+        // build url params from current filters in the store
+        const q = new URLSearchParams();
+        if (filters.keyword) q.set('searchTerm', filters.keyword);
+        if (filters.category && filters.category !== 'all') q.set('category', filters.category);
+        if (filters.subCategory && filters.subCategory !== 'all') q.set('subCategory', filters.subCategory);
+        if (filters.sort) q.set('sort', filters.sort);
+        q.set('page', '1');
+        Object.entries(filters.filters).forEach(([k,v]) => q.set(k, String(v)));
+        navigate(`/search?${q.toString()}`);
+      }} />
     </div>
 
     <div className='flex-1'>
-      <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results: </h1>
+  <h1 className='text-2xl sm:text-3xl font-semibold border-b p-3 sm:p-4 md:p-6 text-slate-700 mt-4 md:mt-0'>Listing results: <span className='text-xs sm:text-sm text-gray-500 ml-2'>{!loading ? `${listings.length}${total ? ` of ${total}` : ''}` : ''}</span></h1>
 
-      <section className='p-7 flex flex-wrap gap-4' aria-label="Property Listings">
+      <section className='p-3 sm:p-4 md:p-6 flex flex-wrap gap-2 sm:gap-3 md:gap-4' aria-label="Property Listings">
         {!loading && listings.length === 0 && (
           <p className='text-lg text-slate-700'>No listing Found!</p>
         )}
@@ -284,7 +162,7 @@ const handleChange =(e) => {
         )}
 
         {!loading && listings && listings.map((listing) => (
-          <article key={listing._id} className="w-full sm:w-[48%] md:w-[32%]">
+          <article key={listing._id} className="w-full xs:w-[calc(50%-6px)] sm:w-[calc(50%-6px)] md:w-[calc(33.33%-8px)]">
             <ListingItem listing={listing} />
           </article>
         ))}

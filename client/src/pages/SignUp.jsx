@@ -1,80 +1,102 @@
-import React from "react"; // Import React library to use React features
-import { Link, useNavigate } from "react-router-dom"; // Import Link component for client-side navigation
-import Oauth from "../components/OAuth";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async"; // Import Helmet for SEO
 import OAuth from "../components/OAuth";
+import { validateSignUp } from "../utils/validation";
 
-// Define the SignUp component as a default export
 export default function SignUp() {
-  // State to store the form data (username, email, password)
   const [formData, setFormData] = React.useState({ username: "", email: "", password: "" });
-
-  // State to store messages to display to the user (success/error)
   const [message, setMessage] = React.useState("");
-
-  // State to track loading status while submitting the form
+  const [errors, setErrors] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
-  const navigate = useNavigate(); // Hook to programmatically navigate to different routes    
+  const navigate = useNavigate();
 
-  // Function to handle changes in input fields
   const handleChange = (e) => {
-    // Update the corresponding property in formData using input's id as key
     setFormData({ ...formData, [e.target.id]: e.target.value });
+    setErrors([]);
   };
 
-  // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior (page reload)
-    setLoading(true); // Set loading state to true while request is processing
+    e.preventDefault();
+
+    const validationErrors = validateSignUp(formData.username, formData.email, formData.password);
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
+      setMessage("");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+    setErrors([]);
+
     try {
-      // Send POST request to backend API to register the user
       const res = await fetch("/api/auth/signup", {
-        method: "POST", // HTTP method
-        headers: { "Content-Type": "application/json" }, // Specify JSON content type
-        body: JSON.stringify(formData), // Convert formData object to JSON string
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
-      const data = await res.json(); // Parse JSON response from backend
+      const data = await res.json();
 
       if (res.ok) {
-        // If response is successful, show success message
-        setMessage("Registration successful! You can now sign in.");
-        navigate("/sign-in"); // Redirect to sign-in page after successful registration 
+        setMessage("✅ Registration successful! Redirecting to sign in...");
+        setTimeout(() => navigate("/sign-in"), 2000);
       } else {
-        // If response failed, show error message returned by backend or a default message
-        setMessage(data.message || "Registration failed!");
+        setErrors([data.message || "Registration failed!"]);
       }
     } catch (error) {
-      // Handle network or unexpected errors
-      setMessage("Error: " + error.message);
+      setErrors(["Network error: " + error.message]);
     } finally {
-      // Reset loading state after request is complete
       setLoading(false);
     }
-    
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto"> {/* Container with padding, max width, and center alignment */}
-      <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1> {/* Page title */}
+    <>
+      <Helmet>
+        <title>Sign Up for Rodvers Listings | Create Your Account</title>
+        <meta
+          name="description"
+          content="Create a free Rodvers Listings account. Post and manage your listings for real estate, vehicles, electronics and more. Secure signup in Uganda."
+        />
+        <meta
+          name="keywords"
+          content="sign up Uganda, create account, free account Rodvers, register listing"
+        />
+        <meta name="robots" content="noindex, follow" />
+        <link rel="canonical" href="https://listings-chvc.onrender.com/sign-up" />
+      </Helmet>
+      
+      <div className="p-6 max-w-lg mx-auto">
+      <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
 
-      {/* Display message to user if it exists */}
-      {message && <p className="text-center text-red-500 mb-4">{message}</p>}
+      {message && <p className="text-center text-green-500 mb-4">{message}</p>}
 
-      {/* Form element with onSubmit event handler */}
+      {errors.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+          {errors.map((error, idx) => (
+            <p key={idx} className="text-red-700 text-sm">{error}</p>
+          ))}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Username input field */}
         <input
           type="text"
           placeholder="Username"
           id="username"
-          onChange={handleChange} // Call handleChange on every keystroke
-          value={formData.username} // Controlled input bound to state
-          required // Make field required
+          onChange={handleChange}
+          value={formData.username}
+          required
           className="border p-3 rounded-lg"
         />
 
-        {/* Email input field */}
         <input
           type="email"
           placeholder="Email"
@@ -85,7 +107,6 @@ export default function SignUp() {
           className="border p-3 rounded-lg"
         />
 
-        {/* Password input field */}
         <input
           type="password"
           placeholder="Password"
@@ -96,26 +117,24 @@ export default function SignUp() {
           className="border p-3 rounded-lg"
         />
 
-        {/* Submit button */}
         <button
           type="submit"
-          disabled={loading} // Disable button while loading
+          disabled={loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95"
         >
-          {loading ? "Signing Up..." : "Sign Up"} {/* Show loading text if request is in progress */}
+          {loading ? "Signing Up..." : "Sign Up"}
         </button>
 
-        <OAuth/> {/* OAuth component for third-party authentication */}    
-
+        <OAuth />
       </form>
 
-      {/* Link to sign-in page */}
       <div className="flex gap-2 justify-center mt-5">
         <p>Have an account?</p>
         <Link to="/sign-in">
           <span className="text-blue-700">Sign in</span>
         </Link>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

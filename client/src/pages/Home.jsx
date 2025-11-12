@@ -1,285 +1,222 @@
-import { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore from 'swiper';
-import { Navigation } from 'swiper/modules';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import { FaList } from 'react-icons/fa';
-import ListingItem from '../components/ListingItem';
-import ProgressiveImage from '../components/ProgressiveImage';
+import { FaHome, FaCar, FaMobileAlt, FaMapMarkerAlt, FaPlus } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFeatured, fetchListings } from '../redux/listings/listingsSlice.js';
+import Carousel from '../components/Carousel.jsx';
+import ListingCard from '../components/ListingCard.jsx';
+import SkeletonCard from '../components/SkeletonCard.jsx';
+
+const CATEGORIES = [
+  { key: 'Real Estate', title: 'Real Estate', subs: ['Apartment', 'House', 'Land', 'Commercial'], icon: FaHome },
+  { key: 'Vehicles', title: 'Vehicles', subs: ['Car', 'Motorcycle', 'Truck', 'Bus'], icon: FaCar },
+  { key: 'Electronics', title: 'Electronics', subs: ['Mobile Phone', 'Laptop', 'TV', 'Camera'], icon: FaMobileAlt },
+];
 
 export default function Home() {
-  SwiperCore.use([Navigation]);
-  const [offerListings, setOfferListings] = useState([]);
-  const [rentListings, setRentListings] = useState([]);
-  const [saleListings, setSaleListings] = useState([]);
+  const dispatch = useDispatch();
+  const { featured } = useSelector(s => s.listings || { featured: [] });
+  const { items, status } = useSelector(s => s.listings || { items: [], status: 'idle' });
 
-  // saleListings logged for debugging previously; removed to reduce noise in production
-
-
-  useEffect(() => {
-
-     const fetchOfferListings = async () => {
-
-      try {
-        
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/get?offer=true&limit=4`);
-        const data = await res.json();
-        setOfferListings(data);
-        fetchRentListings();
-        
-      } catch (err) {
-        console.error("Listings fetch error:", err.message);
-     }
-    };
-
-    const fetchRentListings = async () => {
-      try {
-        
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/get?type=rent&limit=4`);
-        const data = await res.json();
-        setRentListings(data);
-        fetchSaleListings();
-        
-      } catch (err) {
-        console.error("Listings fetch error:", err.message);
-     }
-    };
-
-    const fetchSaleListings = async () => {
-      try {
-        
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/listing/get?type=sale&limit=4`);
-        const data = await res.json();
-        setSaleListings(data);
-
-      } catch (err) {
-        console.error("Listings fetch error:", err.message);
-     }
-    };
-
-    fetchOfferListings();
-
-  }, []); 
-
+  useEffect(()=>{
+    dispatch(fetchFeatured());
+    dispatch(fetchListings({ page: 1, limit: 12 }));
+  }, [dispatch]);
 
   return (
-    <div>
+    <main className="min-h-screen bg-gray-50">
       <Helmet>
-        <title>Real Estate in Uganda - Buy, Rent & Sell Properties</title>
+        <title>Rodvers Listings | Buy, Rent & Sell in Uganda - Real Estate, Cars, Electronics</title>
         <meta
           name="description"
-          content="Discover properties for sale and rent in Uganda. Browse apartments, houses, and commercial real estate across Kampala, Mbarara, Jinja, and more."
+          content="Uganda's trusted online platform to buy, rent, and sell properties, vehicles, and electronics. Browse verified listings for houses, apartments, land, cars, motorcycles, and more. Create free listings and reach thousands of buyers."
         />
         <meta
           name="keywords"
-          content="real estate Uganda, houses for sale Kampala, apartments for rent Mbarara, property for sale Uganda, rental homes East Africa"
+          content="Uganda listings, buy house Uganda, rent apartments Uganda, sell property Uganda, cars for sale Uganda, motorcycles, laptops, electronics Uganda, real estate Uganda, Kampala listings"
         />
-        <link rel="canonical" href={window.location.href} />
-
-        {/* Open Graph */}
-        <meta property="og:title" content="Real Estate in Uganda - Buy, Rent & Sell Properties" />
-        <meta
-          property="og:description"
-          content="Browse apartments, houses, and commercial real estate across Kampala, Mbarara, Jinja, and more."
-        />
+        <meta name="author" content="Rodgers Mugagga, Rodvers Tech Ltd" />
+        <link rel="canonical" href="https://listings-chvc.onrender.com/" />
+        
+        {/* Open Graph Tags */}
+        <meta property="og:title" content="Rodvers Listings | Buy, Rent & Sell in Uganda" />
+        <meta property="og:description" content="Find verified listings across Uganda for real estate, vehicles, and electronics. Post your ad in minutes." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={window.location.href} />
-        {offerListings?.[0] && <meta property="og:image" content={offerListings[0].imageUrls?.[0]} />}
-        <meta property="og:site_name" content="Real Estate Uganda" />
-
-        {/* Twitter */}
+        <meta property="og:url" content="https://listings-chvc.onrender.com/" />
+        <meta property="og:image" content="https://listings-chvc.onrender.com/og-image.jpg" />
+        <meta property="og:site_name" content="Rodvers Listings" />
+        
+        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Real Estate in Uganda - Buy, Rent & Sell Properties" />
-        <meta
-          name="twitter:description"
-          content="Browse apartments, houses, and commercial real estate across Kampala, Mbarara, Jinja, and more."
-        />
-        {offerListings?.[0] && <meta name="twitter:image" content={offerListings[0].imageUrls?.[0]} />}
-
-        {/* Regional meta */}
+        <meta name="twitter:title" content="Rodvers Listings | Buy, Rent & Sell in Uganda" />
+        <meta name="twitter:description" content="Browse verified listings in Uganda for real estate, vehicles, and electronics." />
+        <meta name="twitter:image" content="https://listings-chvc.onrender.com/og-image.jpg" />
+        
+        {/* Additional SEO */}
+        <meta name="robots" content="index, follow" />
+        <meta name="language" content="English" />
+        <meta name="revisit-after" content="7 days" />
         <meta name="geo.region" content="UG" />
         <meta name="geo.placename" content="Uganda" />
-        <meta name="geo.position" content="1.3733;32.2903" />
-        <meta name="ICBM" content="1.3733,32.2903" />
-
-        {/* Optional: structured data for homepage */}
+        
+        {/* Structured Data - Homepage */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "Real Estate Uganda",
-            "url": window.location.href,
+            "name": "Rodvers Listings",
+            "url": "https://listings-chvc.onrender.com",
+            "description": "Uganda's trusted online marketplace for buying, selling, and renting properties, vehicles, and electronics",
             "potentialAction": {
               "@type": "SearchAction",
-              "target": `${window.location.origin}/search?query={search_term_string}`,
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://listings-chvc.onrender.com/search?q={search_term_string}"
+              },
               "query-input": "required name=search_term_string"
             }
           })}
         </script>
       </Helmet>
 
-      {/* top */}
-      <div className='flex flex-col gap-5 p-28 px-3 max-w-6xl mx-auto'>
-        <h1 className='text-slate-700 font-bold text-3xl lg:text-6xl'><span className="text-green-700">Buy</span> Smart. <span className="text-red-700">Sell</span> Fast.</h1>
-        <div className='text-slate-700 text-xs sm:text-sm'>
-          A trusted marketplace for simple, secure, and local deals.<br />Connecting people in your area to buy and sell quickly, easily, and safely.
-        </div>
-        <Link to={"/search"} className='text-blue-800 text-xs sm:text-sm font-bold hover:underline' >
-          Browse Through...
-        </Link>
-      </div>
-
-
-
-      {/* swiper */}
-      <Swiper navigation>
-        {offerListings && offerListings.length > 0 && offerListings?.map((listing, idx) => (
-          <SwiperSlide key={listing._id}>
-            <div className="h-[550px] w-full">
-              <ProgressiveImage
-                src={listing.imageUrls?.[0]}
-                
-                alt={`${listing.name} - ${listing.type} property in ${listing.address}, Uganda`}
-
-                className="h-[550px] w-full"
-                sizes="100vw"
-                priority={idx === 0}
-              />
+      {/* Navbar */}
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex justify-between h-14 sm:h-16 items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Link to="/" className="flex items-center gap-1 sm:gap-2 text-brand-600 font-bold text-base sm:text-lg whitespace-nowrap">
+                <FaPlus className="text-brand-600 text-sm sm:text-base" />
+                <span className="hidden sm:inline">Rodvers Listings</span>
+              </Link>
+              <div className="hidden sm:block flex-1 min-w-0">
+                <input
+                  aria-label="Search"
+                  className="px-3 py-2 border rounded-lg w-full text-sm"
+                  placeholder="Search listings"
+                />
+              </div>
             </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="hidden sm:flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                <FaMapMarkerAlt className="text-xs" />
+                <span>Kampala</span>
+              </div>
+              <Link to="/create-listing" className="bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap">
+                Post Ad
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
 
+      {/* Hero */}
+      <section className="bg-white mt-4 sm:mt-6">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 py-6 sm:py-10 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
+          <div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-600">
+              Buy and Sell Across Uganda — Fast and Secure.
+            </h1>
+            <p className="mt-2 sm:mt-4 text-sm sm:text-base text-gray-600">
+              Find verified sellers, post ads in minutes, and reach buyers across Kampala, Mbarara, Jinja and beyond.
+            </p>
+            <div className="mt-4 sm:mt-6 flex gap-2 sm:gap-3">
+              <Link to="/create-listing" className="bg-brand-600 hover:bg-brand-700 text-white px-3 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                Post Your Ad
+              </Link>
+              <Link to="/search" className="px-3 sm:px-5 py-2 sm:py-3 rounded-lg border border-gray-200 text-xs sm:text-sm">
+                Browse Listings
+              </Link>
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <img
+              src="https://picsum.photos/id/1025/900/600"
+              alt="Buy and sell across Uganda"
+              className="rounded-lg shadow-md w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
 
+      {/* Categories */}
+      <section className="max-w-6xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">Browse by category</h2>
+        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <Link
+                key={cat.key}
+                to={`/category/${encodeURIComponent(cat.key)}`}
+                className="bg-white p-3 sm:p-4 rounded-lg shadow-sm hover:shadow-md flex items-center gap-3 whitespace-nowrap flex-shrink-0 min-w-max"
+              >
+                <div className="p-2 bg-brand-50 rounded-md text-brand-600">
+                  <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm sm:text-base">{cat.title}</div>
+                  <div className="text-xs sm:text-sm text-gray-500">
+                    {cat.subs.length} subcategories
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
-
-
-      {/* listing results for offer, sale and rent */}
-          <div className='flex flex-col gap-8 p-3 max-w-6xl mx-auto my-10'>
-            {offerListings && offerListings.length > 0 && (
-      <section aria-labelledby="recent-offers">
-        <div className="flex justify-between items-center mb-2">
-          <h2 id="recent-offers" className='text-slate-600 font-semibold text-2xl'>Recent Offers</h2>
-          <Link to={'/search?offer=true'} className='text-blue-800 text-xs sm:text-sm font-bold hover:underline'>
-            See More Offers
+      {/* Featured Listings */}
+      <section className="max-w-6xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+        <div className="flex justify-between items-center mb-3 sm:mb-4">
+          <h2 className="text-xl sm:text-2xl font-semibold">Featured listings</h2>
+          <Link to="/search?featured=true" className="text-xs sm:text-sm text-brand-600">
+            See all
           </Link>
         </div>
-        <div className='flex flex-wrap gap-4'>
-          {offerListings.map((listing) => (
-            <ListingItem listing={listing} key={listing._id}/>
-          ))}
-        </div>
-
-        {/* Structured data for offers */}
-        <Helmet>
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              "itemListElement": offerListings.map((listing, index) => ({
-                "@type": "ListItem",
-                "position": index + 1,
-                "url": `${window.location.origin}/listing/${listing._id}`,
-                "name": listing.name,
-                "image": listing.imageUrls?.[0],
-                "description": listing.description,
-                "offers": {
-                  "@type": "Offer",
-                  "price": listing.offer ? listing.discountedPrice : listing.regularPrice,
-                  "priceCurrency": "UGX",
-                  "availability": "https://schema.org/InStock"
-                }
-              }))
-            })}
-          </script>
-        </Helmet>
+        {featured?.length ? (
+          <Carousel items={featured} />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-4">
+            {Array.from({length:3}).map((_,i)=>(<SkeletonCard key={i} />))}
+          </div>
+        )}
       </section>
-    )}
 
-    {rentListings && rentListings.length > 0 && (
-      <section aria-labelledby="recent-rent">
-        <div className="flex justify-between items-center mb-2">
-          <h2 id="recent-rent" className='text-slate-600 font-semibold text-2xl'>Recent Places For Rent</h2>
-          <Link to={'/search?type=rent'} className='text-blue-800 text-xs sm:text-sm font-bold hover:underline'>
-            See More Places For Rent
+      {/* Latest Listings */}
+      <section className="max-w-6xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+        <div className="flex justify-between items-center mb-3 sm:mb-4">
+          <h2 className="text-xl sm:text-2xl font-semibold">Latest listings</h2>
+          <Link to="/search" className="text-xs sm:text-sm text-brand-600">
+            View all
           </Link>
         </div>
-        <div className='flex flex-wrap gap-4'>
-          {rentListings.map((listing) => (
-            <ListingItem listing={listing} key={listing._id}/>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-4">
+          {status === 'loading' ? (
+            Array.from({length:6}).map((_,i)=>(<SkeletonCard key={i} />))
+          ) : (
+            items.map(item => (
+              <ListingCard key={item._id || item.id} listing={item} onClick={()=>window.location.href=`/listing/${item._id || item.id}`} />
+            ))
+          )}
         </div>
-
-        {/* Structured data for rent listings */}
-        <Helmet>
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              "itemListElement": rentListings.map((listing, index) => ({
-                "@type": "ListItem",
-                "position": index + 1,
-                "url": `${window.location.origin}/listing/${listing._id}`,
-                "name": listing.name,
-                "image": listing.imageUrls?.[0],
-                "description": listing.description,
-                "offers": {
-                  "@type": "Offer",
-                  "price": listing.regularPrice,
-                  "priceCurrency": "UGX",
-                  "availability": "https://schema.org/InStock"
-                }
-              }))
-            })}
-          </script>
-        </Helmet>
       </section>
-    )}
 
-    {saleListings && saleListings.length > 0 && (
-      <section aria-labelledby="recent-sale">
-        <div className="flex justify-between items-center mb-2">
-          <h2 id="recent-sale" className='text-slate-600 font-semibold text-2xl'>Recent Places for Sale</h2>
-          <Link to={'/search?type=sale'} className='text-blue-800 text-xs sm:text-sm font-bold hover:underline'>
-            See More Places For Sale
-          </Link>
+      {/* Footer */}
+      <footer className="bg-white mt-6 sm:mt-8 border-t">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8 flex flex-col md:flex-row justify-between items-start gap-4">
+          <div>
+            <h4 className="font-bold text-brand-600">Rodvers Tech Ltd</h4>
+            <p className="text-sm text-gray-600">© Rodvers Tech Ltd</p>
+          </div>
+          <div className="mt-4 md:mt-0 flex gap-6">
+            <Link to="/about" className="text-sm text-gray-600">About Us</Link>
+            <Link to="/contact" className="text-sm text-gray-600">Contact</Link>
+            <Link to="/privacy" className="text-sm text-gray-600">Privacy Policy</Link>
+          </div>
         </div>
-        <div className='flex flex-wrap gap-4'>
-          {saleListings.map((listing) => (
-            <ListingItem listing={listing} key={listing._id}/>
-          ))}
-        </div>
-
-        {/* Structured data for sale listings */}
-        <Helmet>
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              "itemListElement": saleListings.map((listing, index) => ({
-                "@type": "ListItem",
-                "position": index + 1,
-                "url": `${window.location.origin}/listing/${listing._id}`,
-                "name": listing.name,
-                "image": listing.imageUrls?.[0],
-                "description": listing.description,
-                "offers": {
-                  "@type": "Offer",
-                  "price": listing.regularPrice,
-                  "priceCurrency": "UGX",
-                  "availability": "https://schema.org/InStock"
-                }
-              }))
-            })}
-          </script>
-        </Helmet>
-      </section>
-    )}
-
-      </div>
-    </div>
-  )
+      </footer>
+    </main>
+  );
 }

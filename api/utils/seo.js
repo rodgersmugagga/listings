@@ -1,5 +1,5 @@
-const SITE_NAME = 'Rodvers Listings';
-const SITE_URL = 'https://rodverlistings.com';
+const SITE_NAME = process.env.SITE_NAME || 'Rodvers Listings';
+const SITE_URL = process.env.SITE_URL || 'https://rodverlistings.com';
 
 // Comprehensive Uganda city/neighborhood data with search variations
 const UG_CITIES = [
@@ -76,7 +76,7 @@ function extractNeighborhood(address, city) {
 /**
  * Generate SEO metadata for Real Estate listings
  */
-function generateRealEstateSeo(subCategory, details, address) {
+function generateRealEstateSeo(subCategory, details, address, listingName) {
   const city = extractCity(address) || 'Uganda';
   const neighborhood = extractNeighborhood(address, city);
   const bedroom = details?.bedrooms || '';
@@ -128,7 +128,7 @@ function generateRealEstateSeo(subCategory, details, address) {
 /**
  * Generate SEO metadata for Vehicle listings
  */
-function generateVehicleSeo(subCategory, details, address) {
+function generateVehicleSeo(subCategory, details, address, listingName) {
   const city = extractCity(address) || 'Uganda';
   const brand = details?.brand || '';
   const model = details?.model || '';
@@ -174,7 +174,7 @@ function generateVehicleSeo(subCategory, details, address) {
 /**
  * Generate SEO metadata for Electronics listings
  */
-function generateElectronicsSeo(subCategory, details, address) {
+function generateElectronicsSeo(subCategory, details, address, listingName) {
   const city = extractCity(address) || 'Uganda';
   const brand = details?.brand || '';
   const model = details?.model || '';
@@ -221,9 +221,10 @@ function generateElectronicsSeo(subCategory, details, address) {
  * @param {string} subCategory - e.g., 'Apartment', 'Car', 'Mobile Phone'
  * @param {object} details - Category-specific details (bedrooms, brand, model, etc.)
  * @param {string} address - Full address/location string
+ * @param {string} listingName - Listing title (optional)
  * @returns {object} { title, description, keywords, canonical, slug }
  */
-export function generateSeo(category, subCategory, details = {}, address = '') {
+export function generateSeo(category, subCategory, details = {}, address = '', listingName = '') {
   // Validate inputs
   if (!category || !subCategory) {
     return {
@@ -238,11 +239,11 @@ export function generateSeo(category, subCategory, details = {}, address = '') {
   // Route to category-specific generator
   switch (category) {
     case 'Real Estate':
-      return generateRealEstateSeo(subCategory, details, address);
+      return generateRealEstateSeo(subCategory, details, address, listingName);
     case 'Vehicles':
-      return generateVehicleSeo(subCategory, details, address);
+      return generateVehicleSeo(subCategory, details, address, listingName);
     case 'Electronics':
-      return generateElectronicsSeo(subCategory, details, address);
+      return generateElectronicsSeo(subCategory, details, address, listingName);
     default:
       // Fallback for unknown categories
       return {

@@ -17,8 +17,7 @@ router.patch("/avatar", authMiddleware, upload.single("avatar"), updateAvatar);
 // Delete user account
 router.delete('/delete/:id', authMiddleware, validateObjectIdParam('id'), deleteUser);
 
-// Signout
-router.get('/signout/:id', authMiddleware, validateObjectIdParam('id'), deleteUser);
+// Note: signout is handled in auth routes; removed incorrect mapping that called deleteUser.
 
 // Update profile with optional avatar
 router.get('/listings/:id', authMiddleware, validateObjectIdParam('id'), getListings);

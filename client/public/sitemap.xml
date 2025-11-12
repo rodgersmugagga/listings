@@ -6,7 +6,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://listings-chvc.onrender.com/</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -14,28 +14,51 @@
   <!-- Key Pages -->
   <url>
     <loc>https://listings-chvc.onrender.com/about</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://listings-chvc.onrender.com/search</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://listings-chvc.onrender.com/contact</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
-  <!-- Example Listing (Google will crawl dynamic ones) -->
+  <!-- Category Pages -->
+  <url>
+    <loc>https://listings-chvc.onrender.com/category/real-estate</loc>
+    <lastmod>2025-11-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://listings-chvc.onrender.com/category/vehicles</loc>
+    <lastmod>2025-11-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://listings-chvc.onrender.com/category/electronics</loc>
+    <lastmod>2025-11-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Example Listing (dynamic listings will be crawled) -->
   <url>
     <loc>https://listings-chvc.onrender.com/listing/sample-listing</loc>
+    <lastmod>2025-11-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
