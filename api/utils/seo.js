@@ -1,5 +1,5 @@
 const SITE_NAME = process.env.SITE_NAME || 'Rodvers Listings';
-const SITE_URL = process.env.SITE_URL || 'https://rodverlistings.com';
+const SITE_URL = process.env.SITE_URL || 'https://listings-chvc.onrender.com';
 
 // Comprehensive Uganda city/neighborhood data with search variations
 const UG_CITIES = [

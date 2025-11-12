@@ -244,7 +244,7 @@ export const validateProfileUpdate = (data) => {
 
   // Password validation (if provided)
   if (data.password) {
-    if (data.password.length < 8) {
+    if (data.password.length < 6) {
       errors.push('Password must be at least 8 characters');
     } else if (data.password.length > 128) {
       errors.push('Password must not exceed 128 characters');

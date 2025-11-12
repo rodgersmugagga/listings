@@ -82,8 +82,8 @@ export const updateUser = async (req, res) => {
 
     // Handle password update with validation
     if (req.body.password) {
-      if (req.body.password.length < 8) {
-        return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+      if (req.body.password.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters long' });
       }
       const salt = await bcryptjs.genSalt(10);
       updateData.password = await bcryptjs.hash(req.body.password, salt);

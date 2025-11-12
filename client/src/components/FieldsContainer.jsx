@@ -17,22 +17,24 @@ export default function FieldsContainer({
   }
 
   return (
-    <>
+    <div className="grid grid-cols-3 gap-2">
       {fields.map(fieldName => (
-        <FieldRenderer
-          key={fieldName}
-          fieldName={fieldName}
-          value={data[fieldName]}
-          onChange={(e) => {
-            const { value, type, checked } = e.target;
-            const finalValue = type === 'checkbox' ? checked : (type === 'number' && value !== '' ? Number(value) : value);
-            onChange(fieldName, finalValue);
-          }}
-          category={category}
-          subCategory={subCategory}
-          error={errors[fieldName]}
-        />
+        <div key={fieldName} className="w-full">
+          <FieldRenderer
+            fieldName={fieldName}
+            value={data[fieldName]}
+            onChange={(e) => {
+              const { value, type, checked } = e.target;
+              const finalValue = type === 'checkbox' ? checked : (type === 'number' && value !== '' ? Number(value) : value);
+              onChange(fieldName, finalValue);
+            }}
+            category={category}
+            subCategory={subCategory}
+            error={errors[fieldName]}
+            className="text-xs p-1 w-full" // Tiny, compact input
+          />
+        </div>
       ))}
-    </>
+    </div>
   );
 }

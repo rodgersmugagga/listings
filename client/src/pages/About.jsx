@@ -105,6 +105,15 @@ const About = () => {
       </Helmet>
 
       <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
+        {/* CEO Image */}
+        <div style={{ marginBottom: "30px", display: "flex", justifyContent: "center" }}>
+          <img 
+            src="https://res.cloudinary.com/dnj7dtnvx/image/upload/v1760456116/listings_app_avatars/dpkpjjogegqnsjvbgx5x.png" 
+            alt="Rodgers Mugagga, CEO & Founder" 
+            style={{ width: "150px", height: "150px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1a1a1a" }}
+          />
+        </div>
+
         <h1 style={{ fontSize: "3rem", color: "#1a1a1a", marginBottom: "20px" }}>
           About Rodvers Tech Ltd
         </h1>

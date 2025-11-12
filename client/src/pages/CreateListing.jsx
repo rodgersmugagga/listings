@@ -117,7 +117,7 @@ export default function CreateListing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.imageUrls || formData.imageUrls.length < 1) return setError("You must upload at least 1 image!");
-    if (+formData.regularPrice < +formData.discountedPrice) return setError("Discount price must be lower than regular price!");
+    if (+formData.regularPrice < +formData.discountedPrice) return setError("Discounted price must be lower than regular price!");
 
     setError(false);
     setLoading(true);
@@ -156,8 +156,62 @@ export default function CreateListing() {
   return (
     <main className='max-w-6xl mx-auto px-2 sm:px-3 md:px-4 p-3'>
       <Helmet>
-        <title>Create a Listing in Uganda | Post Real Estate, Vehicles, Electronics - Rodvers</title> <meta name="description" content="Create and publish your listing in Uganda. Post real estate, vehicles, electronics and more. Upload images, set prices, and reach thousands of verified buyers on Rodvers Listings." /> <meta name="keywords" content="create listing Uganda, post listing Uganda, sell in Uganda, rent in Uganda, classified ads Uganda, free listings" /> <meta name="author" content="Rodvers Tech Ltd" /> <link rel="canonical" href="https://listings-chvc.onrender.com/create-listing" /> {/* Open Graph */} <meta property="og:title" content="Create a Listing in Uganda | Post Your Ad - Rodvers" /> <meta property="og:description" content="Post your listing on Rodvers Listings. Reach thousands of buyers across Uganda." /> <meta property="og:type" content="website" /> <meta property="og:url" content="https://listings-chvc.onrender.com/create-listing" /> <meta property="og:site_name" content="Rodvers Listings" /> {/* Twitter Card */} <meta name="twitter:card" content="summary" /> <meta name="twitter:title" content="Create a Listing in Uganda - Rodvers" /> <meta name="twitter:description" content="Post your ad for free on Rodvers Listings. Sell or rent quickly in Uganda." /> {/* Additional SEO */} <meta name="robots" content="index, follow" /> <meta name="geo.region" content="UG" /> <meta name="geo.placename" content="Uganda" /> {/* Structured Data */} <script type="application/ld+json"> {JSON.stringify({ "@context": "https://schema.org", "@type": "WebApplication", "name": "Create Listing", "applicationCategory": "UtilitiesApplication", "description": "Create and publish classified listings across Uganda", "url": "https://listings-chvc.onrender.com/create-listing", "provider": { "@type": "Organization", "name": "Rodvers Tech Ltd", "url": "https://listings-chvc.onrender.com" }, "offers": { "@type": "Offer", "price": "0", "priceCurrency": "UGX", "description": "Free listing creation" } })} </script> {/* Schema for HowTo */} <script type="application/ld+json"> {JSON.stringify({ "@context": "https://schema.org", "@type": "HowTo", "name": "How to Create a Listing on Rodvers", "description": "Step-by-step guide to create and publish your listing", "step": [ { "@type": "HowToStep", "name": "Fill Basic Information", "text": "Enter listing name, description, and address" }, { "@type": "HowToStep", "name": "Select Category", "text": "Choose category and subcategory (Real Estate, Vehicles, Electronics)" }, { "@type": "HowToStep", "name": "Set Pricing", "text": "Enter regular price and optional discount" }, { "@type": "HowToStep", "name": "Upload Images", "text": "Upload up to 6 images with first as cover" }, { "@type": "HowToStep", "name": "Publish", "text": "Review and publish your listing" } ] })} </script>
+        <title>Create a Listing in Uganda | Post Real Estate, Vehicles, Electronics - Rodvers</title>
+        <meta name="description" content="Create and publish your listing in Uganda. Post real estate, vehicles, electronics and more." />
+        <meta name="keywords" content="create listing Uganda, post listing Uganda, sell in Uganda, rent in Uganda, classified ads Uganda, free listings" />
+        <meta name="author" content="Rodvers Tech Ltd" />
+        <link rel="canonical" href="https://listings-chvc.onrender.com/create-listing" />
+        <meta property="og:title" content="Create a Listing in Uganda | Post Your Ad - Rodvers" />
+        <meta property="og:description" content="Post your listing on Rodvers Listings. Reach thousands of buyers across Uganda." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://listings-chvc.onrender.com/create-listing" />
+        <meta property="og:site_name" content="Rodvers Listings" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Create a Listing in Uganda - Rodvers" />
+        <meta name="twitter:description" content="Post your ad for free on Rodvers Listings. Sell or rent quickly in Uganda." />
+        <meta name="robots" content="index, follow" />
+        <meta name="geo.region" content="UG" />
+        <meta name="geo.placename" content="Uganda" />
+
+        <script type="application/ld+json">{`
+          ${JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "Create Listing",
+            "applicationCategory": "UtilitiesApplication",
+            "description": "Create and publish classified listings across Uganda",
+            "url": "https://listings-chvc.onrender.com/create-listing",
+            "provider": {
+              "@type": "Organization",
+              "name": "Rodvers Tech Ltd",
+              "url": "https://listings-chvc.onrender.com"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "UGX",
+              "description": "Free listing creation"
+            }
+          })}
+        `}</script>
+
+        <script type="application/ld+json">{`
+          ${JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "name": "How to Create a Listing on Rodvers",
+            "description": "Step-by-step guide to create and publish your listing",
+            "step": [
+              { "@type": "HowToStep", "name": "Fill Basic Information", "text": "Enter listing name, description, and address" },
+              { "@type": "HowToStep", "name": "Select Category", "text": "Choose category and subcategory (Real Estate, Vehicles, Electronics)" },
+              { "@type": "HowToStep", "name": "Set Pricing", "text": "Enter regular price and optional discount" },
+              { "@type": "HowToStep", "name": "Upload Images", "text": "Upload up to 6 images with first as cover" },
+              { "@type": "HowToStep", "name": "Publish", "text": "Review and publish your listing" }
+            ]
+          })}
+        `}</script>
       </Helmet>
+
 
       <h1 className='text-3xl font-semibold text-center my-7'>Create a Listing in Uganda</h1>
 
@@ -208,7 +262,7 @@ export default function CreateListing() {
               {formData.offer && (
                 <div className='ml-8 mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
                   <input type="number" id="discountedPrice" min="0" required onChange={handleChange} value={formData.discountedPrice} className="border border-gray-300 rounded-lg flex-1"/>
-                  <p className='text-sm font-medium mt-1'>Discount Price (UGX)</p>
+                  <p className='text-sm font-medium mt-1'>Discounted Price (UGX)</p>
                 </div>
               )}
             </div>
@@ -251,7 +305,7 @@ export default function CreateListing() {
       </form>
 
       {/* Dynamic category-specific fields */}
-      <div className='mt-6 border-t pt-6'>
+      <div className='mt-6 border-t pt-6 items-center'>
         <h2 className='text-2xl font-semibold mb-4'>{formData.subCategory} Details</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           <FieldsContainer 

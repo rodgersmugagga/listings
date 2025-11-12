@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async"; // Import Helmet for SEO
+import SafeHelmet from "../components/SafeHelmet.jsx"; // Safe Helmet wrapper for SEO
 import { 
   deleteUserFailure, 
   deleteUserStart, 
@@ -45,8 +45,8 @@ export default function Profile() {
       setUpdateError("Please enter a valid email address");
       return false;
     }
-    if (password && password.length < 8) {
-      setUpdateError("Password must be at least 8 characters long");
+    if (password && password.length < 6) {
+      setUpdateError("Password must be at least 6 characters long");
       return false;
     }
     return true;
@@ -239,7 +239,7 @@ const handleListingDelete = async (listingId) => {
 
   return (
     <>
-      <Helmet>
+  <SafeHelmet>
         <title>My Profile | Manage Listings - Rodvers</title>
         <meta
           name="description"
@@ -251,7 +251,7 @@ const handleListingDelete = async (listingId) => {
         />
         <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href="https://listings-chvc.onrender.com/profile" />
-      </Helmet>
+  </SafeHelmet>
 
       <div>
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>

@@ -249,14 +249,29 @@ export default function Listing() {
                 <DetailsDisplay category={listing.category} subCategory={listing.subCategory} details={listing.details} />
               </div>
 
-              <div className="mt-4">
-                {currentUser && listing.userRef !== currentUser?.user?._id && !contact && (
-                  <button type="button" onClick={()=>setContact(true)} className='text-white border bg-brand-600 hover:bg-brand-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 w-full'>
-                    Contact Owner
-                  </button>
+             <div className="mt-4">
+                {listing.userRef !== currentUser?.user?._id && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (currentUser) {
+                          setContact(true);
+                        } else {
+                          alert("Please log in first to contact the owner.");
+                        }
+                      }}
+                      className="text-white border bg-brand-600 hover:bg-brand-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 w-full"
+                    >
+                      Contact Owner
+                    </button>
+
+                    {/* Render contact form only for logged-in users */}
+                    {contact && currentUser && <Contact listing={listing} />}
+                  </>
                 )}
-                {contact && <Contact listing={listing}/>} 
               </div>
+
             </aside>
           </div>
         </div>

@@ -3,15 +3,29 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
+  "description": "Find and list local properties, vehicles, and electronics in your area. Optimized for fast loading and local search.",
+  "keywords": [
+    "local listings",
+    "property for rent",
+    "apartments for rent",
+    "houses for sale",
+    "cars for sale",
+    "electronics in [Your City]",
+    "Mbarara listings",
+    "Uganda listings",
+    "real estate",
+    "vehicles",
+    "mobile phones"
+  ],
+  "author": "Rodgers Mugagga",
+  "license": "ISC",
   "scripts": {
     "dev": "nodemon api/index.js",
     "start": "node api/index.js",
-    "build": "npm install && npm install --prefix client && npm run build --prefix client"
+    "build": "npm install && npm install --prefix client && npm run build --prefix client",
+    "lint": "eslint . --ext .js,.jsx",
+    "prepare": "husky install"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
@@ -26,6 +40,9 @@
     "nodemon": "^3.1.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sharp": "^0.34.4"
+    "sharp": "^0.34.4",
+    "sitemap": "^7.0.0",
+    "express-sitemap-xml": "^2.0.1",
+    "express-robots-txt": "^1.0.0"
   }
 }

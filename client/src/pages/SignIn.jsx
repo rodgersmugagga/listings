@@ -142,13 +142,16 @@ export default function SignIn() {
 
       </form>
 
-      {/* Link to sign-up page */}
-      <div className="flex gap-2 justify-center mt-5">
-        <p>Don't have an account?</p>
+      {/* Link to sign-up page as a big button */}
+      <div className="flex flex-col items-center gap-3 mt-6">
+        <p className="text-sm text-gray-600">Don't have an account?</p>
         <Link to="/sign-up">
-          <span className="text-blue-700">Sign up</span>
+          <button className="bg-blue-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors w-full max-w-xs">
+            Sign Up
+          </button>
         </Link>
       </div>
+      
       </div>
     </>
   );
