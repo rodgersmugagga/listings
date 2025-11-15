@@ -219,7 +219,7 @@ export default function Listing() {
               </p>
 
               <p className="flex items-center mt-4 gap-2 text-sm text-slate-600">
-                <FaMapMarkerAlt className="text-green-700" /> {listing.address}
+                <FaMapMarkerAlt className="text-brand-600" /> {listing.address}
               </p>
 
               <div className="flex gap-3 mt-4">
@@ -227,7 +227,7 @@ export default function Listing() {
                   {(listing.details?.type ?? listing.type) === 'rent' ? 'For Rent' : 'For Sale'}
                 </p>
                 {listing.offer && originalPrice > finalPrice && (
-                  <p className="text-center text-white bg-green-900 w-full max-w-[200px] p-1 rounded-md">
+                  <p className="text-center text-white bg-brand-800 w-full max-w-[200px] p-1 rounded-md">
                     UGX {Math.abs(originalPrice - finalPrice).toLocaleString('en-US')} Discount
                   </p>
                 )}

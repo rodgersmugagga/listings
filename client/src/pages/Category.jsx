@@ -28,7 +28,8 @@ export default function Category(){
     const sort = q.get('sort') || filters.sort;
     const page = Number(q.get('page') || filters.page || 1);
     const params = {
-      category: categoryName,
+        keyword: q.get('searchTerm') || filters.keyword || '',
+        category: categoryName,
       subCategory: q.get('subCategory') || (filters.subCategory === 'all' ? undefined : filters.subCategory),
       limit: filters.limit,
       startIndex: (page - 1) * filters.limit,
@@ -37,7 +38,7 @@ export default function Category(){
     };
     dispatch(fetchListings(params));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search, filters.filters, filters.page, filters.sort]);
+    }, [location.search, filters.filters, filters.page, filters.sort, filters.keyword]);
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -91,18 +92,23 @@ export default function Category(){
       <div className="max-w-6xl mx-auto px-2 sm:px-3 md:px-4 py-4">
         <div className='flex flex-col md:flex-row gap-3 md:gap-4'>
           <div className='p-3 md:p-0 md:w-72'>
-            <FiltersPanel compact onApply={() => {
-              // build params from current filters and dispatch fetchListings
-              const params = {
-                category: filters.category === 'all' ? categoryName : filters.category,
-                subCategory: filters.subCategory && filters.subCategory !== 'all' ? filters.subCategory : undefined,
-                limit: filters.limit,
-                startIndex: 0,
-                sort: filters.sort,
-                filters: filters.filters,
-              };
-              dispatch(fetchListings(params));
-            }} />
+            <FiltersPanel 
+              compact 
+              lockedCategory={categoryName}
+              onApply={() => {
+                // build params from current filters and dispatch fetchListings
+                const params = {
+                  category: categoryName,
+                   keyword: filters.keyword || '',
+                  subCategory: filters.subCategory && filters.subCategory !== 'all' ? filters.subCategory : undefined,
+                  limit: filters.limit,
+                  startIndex: 0,
+                  sort: filters.sort,
+                  filters: filters.filters,
+                };
+                dispatch(fetchListings(params));
+              }} 
+            />
           </div>
 
           <div className='flex-1'>

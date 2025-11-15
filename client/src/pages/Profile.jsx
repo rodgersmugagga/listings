@@ -259,7 +259,7 @@ const handleListingDelete = async (listingId) => {
       {/* Success message */}
       {updateSuccess && (
         <div className="max-w-lg mx-auto mb-4">
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+          <div className="bg-brand-100 border border-brand-400 text-brand-700 px-4 py-3 rounded relative">
             <span className="block sm:inline">Profile updated successfully!</span>
           </div>
         </div>
@@ -315,15 +315,15 @@ const handleListingDelete = async (listingId) => {
             </>
           ) : 'Update'}
         </button>
-        <Link className="bg-green-700  text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4" to={'/create-listing'}> Create Listing </Link>
+  <Link className="bg-brand-600 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4" to={'/create-listing'}> Create Listing </Link>
       </form>
 
-      <div className="flex justify-between gap-4 max-w-lg mx-auto p-6">
+        <div className="flex justify-between gap-4 max-w-lg mx-auto p-6">
         <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete Account</span>
         <span onClick={handleSignOut} className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
 
-        <button onClick={handleShowListings} className="text-green-700 w-full p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4">Show Listings</button>
+        <button onClick={handleShowListings} className="text-brand-600 w-full p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80 mt-4">Show Listings</button>
         <p className="text-red-700 mt-5">{showListingError ? "Error showing Listings!" : ""}</p>
 
         {userListings && userListings.length > 0 && (
@@ -353,7 +353,7 @@ const handleListingDelete = async (listingId) => {
         <div className="flex flex-col items-center">
           <button onClick={()=>handleListingDelete(listing._id)} className="text-red-700 uppercase">Delete</button>
           <Link to={`/update-listing/${listing._id}`}>
-            <button className="text-green-700 uppercase">Edit</button>
+            <button className="text-brand-600 uppercase">Edit</button>
           </Link>
         </div>
       </div>

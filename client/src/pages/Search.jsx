@@ -67,7 +67,7 @@ export default function Search() {
 
 
   return (
-  <div className='flex flex-col md:flex-row gap-4'>
+  <div className='flex flex-col md:flex-row gap-1 md:gap-4'>
 
     <Helmet>
       <title>Search Listings in Uganda | Real Estate, Vehicles, Electronics - Rodvers</title>
@@ -135,7 +135,7 @@ export default function Search() {
       </script>
     </Helmet>
 
-    <div className='p-3 md:p-0 md:w-80 md:border-r-2 md:border-b-0 border-b-2'>
+    <div className='p-1 sm:p-2 md:p-0 md:w-80 md:border-r-2 md:border-b-0 border-b-2'>
       <FiltersPanel onApply={() => {
         // build url params from current filters in the store
         const q = new URLSearchParams();
@@ -168,7 +168,7 @@ export default function Search() {
         ))}
 
         {showMore && (
-          <button type="button" onClick={onShowMoreClick} className='text-green-700 p-7 hover:underline'>
+          <button type="button" onClick={onShowMoreClick} className='text-brand-600 p-7 hover:underline'>
             Show More
           </button>
         )}

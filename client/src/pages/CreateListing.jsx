@@ -259,8 +259,8 @@ export default function CreateListing() {
                 <label htmlFor="offer" className='text-sm font-medium cursor-pointer'>Offer Discounted Price</label>
               </div>
 
-              {formData.offer && (
-                <div className='ml-8 mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+                {formData.offer && (
+                <div className='ml-8 mt-3 p-3 bg-brand-50 border border-brand-200 rounded-lg'>
                   <input type="number" id="discountedPrice" min="0" required onChange={handleChange} value={formData.discountedPrice} className="border border-gray-300 rounded-lg flex-1"/>
                   <p className='text-sm font-medium mt-1'>Discounted Price (UGX)</p>
                 </div>
@@ -274,9 +274,9 @@ export default function CreateListing() {
           <p className='font-semibold text-lg'>Images</p>
           <span className='text-gray-600 text-sm'>First image will be cover (max 6)</span>
 
-          <div className='flex flex-col sm:flex-row gap-4'>
+            <div className='flex flex-col sm:flex-row gap-4'>
             <input type="file" accept="image/*" multiple onChange={handleFileChange} className='p-3 border border-gray-300 rounded-lg w-full'/>
-            <button type="button" onClick={handleUpload} disabled={uploading} className='text-green-700 border border-green-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80'>
+            <button type="button" onClick={handleUpload} disabled={uploading} className='text-brand-600 border border-brand-600 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80'>
               {uploading ? 'Uploading...' : 'Upload'}
             </button>
           </div>

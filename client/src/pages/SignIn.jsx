@@ -94,7 +94,7 @@ export default function SignIn() {
       <h1 className="text-3xl text-center font-semibold my-7">Sign In</h1> {/* Page title */}
 
       {/* Show success message if it exists */}
-      {message && <p className="text-center text-green-500 mb-4">{message}</p>}
+  {message && <p className="text-center text-brand-500 mb-4">{message}</p>}
 
       {/* Show validation errors */}
       {errors.length > 0 && (
@@ -146,7 +146,7 @@ export default function SignIn() {
       <div className="flex flex-col items-center gap-3 mt-6">
         <p className="text-sm text-gray-600">Don't have an account?</p>
         <Link to="/sign-up">
-          <button className="bg-blue-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors w-full max-w-xs">
+          <button className="bg-brand-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-brand-700 transition-colors w-full max-w-xs">
             Sign Up
           </button>
         </Link>

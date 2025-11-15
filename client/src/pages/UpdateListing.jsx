@@ -335,8 +335,8 @@ export default function UpdateListing() {
               </div>
               
               {/* Discounted price shown only if offer checked */}
-              {formData.offer && (
-                <div className='ml-8 mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+                {formData.offer && (
+                <div className='ml-8 mt-3 p-3 bg-brand-50 border border-brand-200 rounded-lg'>
                   <div className='flex gap-2 items-center'>
                     <input type="number" className="border border-gray-300 rounded-lg" id="discountedPrice" min="0" max="100000" required onChange={handleChange} value={formData.discountedPrice} />
                     <div className='flex flex-col items-start'>
@@ -373,7 +373,7 @@ export default function UpdateListing() {
 
           <div className='flex gap-4'>
             <input onChange={handleFileChange} className='p-3 border border-gray-300 rounded-lg w-full' type="file" id="images" accept="image/*" multiple />
-            <button type="button" onClick={handleUpload} disabled={uploading} className='text-green-700 border border-green-700 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>
+            <button type="button" onClick={handleUpload} disabled={uploading} className='text-brand-600 border border-brand-600 p-3 rounded-lg uppercase hover:shadow-lg disabled:opacity-80 mt-4'>
               {uploading ? 'Uploading...' : 'Upload'}
             </button>
           </div>

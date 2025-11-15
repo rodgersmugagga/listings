@@ -76,7 +76,7 @@ export default function SignUp() {
       <div className="p-6 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
 
-      {message && <p className="text-center text-green-500 mb-4">{message}</p>}
+  {message && <p className="text-center text-brand-500 mb-4">{message}</p>}
 
       {errors.length > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
@@ -131,7 +131,7 @@ export default function SignUp() {
       <div className="flex gap-2 justify-center mt-5">
         <p>Have an account?</p>
         <Link to="/sign-in">
-          <span className="text-blue-700">Sign in</span>
+          <span className="text-brand-600">Sign in</span>
         </Link>
       </div>
       </div>

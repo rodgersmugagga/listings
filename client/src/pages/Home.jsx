@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FaHome, FaCar, FaMobileAlt, FaMapMarkerAlt, FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,8 +18,17 @@ const CATEGORIES = [
 
 export default function Home() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
   const { featured } = useSelector(s => s.listings || { featured: [] });
   const { items, status } = useSelector(s => s.listings || { items: [], status: 'idle' });
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);
+    }
+  };
 
   useEffect(()=>{
     dispatch(fetchFeatured());
@@ -89,13 +100,21 @@ export default function Home() {
                 <FaPlus className="text-brand-600 text-sm sm:text-base" />
                 <span className="hidden sm:inline">Rodvers Listings</span>
               </Link>
-              <div className="hidden sm:block flex-1 min-w-0">
+                <form onSubmit={handleSearchSubmit} className="hidden sm:flex flex-1 min-w-0 gap-1">
                 <input
                   aria-label="Search"
                   className="px-3 py-2 border rounded-lg w-full text-sm"
                   placeholder="Search listings"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
-              </div>
+                  <button type="submit" className="text-slate-600 hover:text-slate-800">
+                    <span className="sr-only">Search</span>
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </form>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="hidden sm:flex items-center gap-2 text-xs sm:text-sm text-gray-600">
@@ -143,14 +162,14 @@ export default function Home() {
       {/* Categories */}
       <section className="max-w-6xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
         <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">Browse by category</h2>
-        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             return (
               <Link
                 key={cat.key}
                 to={`/category/${encodeURIComponent(cat.key)}`}
-                className="bg-white p-3 sm:p-4 rounded-lg shadow-sm hover:shadow-md flex items-center gap-3 whitespace-nowrap flex-shrink-0 min-w-max"
+                className="bg-white p-3 sm:p-4 rounded-lg shadow-sm hover:shadow-md flex items-center gap-3 whitespace-nowrap"
               >
                 <div className="p-2 bg-brand-50 rounded-md text-brand-600">
                   <Icon className="w-5 h-5 sm:w-6 sm:h-6" />

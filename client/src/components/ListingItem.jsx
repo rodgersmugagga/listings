@@ -17,7 +17,7 @@ export default function ListingItem({ listing }) {
   const { finalPrice: price, discountAmount } = resolvePrices(listing);
 
   return (
-    <div className='relative bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full'>
+  <div className='relative bg-white border border-brand-200 shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full'>
       {isFeatured && (
         <div className='absolute top-2 left-2 bg-yellow-400 text-black px-2 py-0.5 rounded-full text-xs font-semibold z-20'>Featured</div>
       )}
@@ -33,7 +33,7 @@ export default function ListingItem({ listing }) {
             {listing.name}
           </p>
           <div className='flex items-center gap-1'>
-            <MdLocationOn className='h-4 w-4 text-green-700' />
+            <MdLocationOn className='h-4 w-4 text-brand-600' />
             <p className='text-xs sm:text-sm text-gray-500 truncate w-full'>{listing.address}</p>
           </div>
           <p className='text-xs sm:text-sm text-gray-600 line-clamp-2'>{listing.description}</p>
