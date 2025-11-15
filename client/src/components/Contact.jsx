@@ -46,7 +46,7 @@ export default function Contact({ listing }) {
       />
 
       <a
-        href={`mailto:${owner.email}?subject=Regarding ${listing?.name}&body=${encodeURIComponent(message)}`}
+        href={`mailto:${(listing?.sellerEmail) || owner.email}?subject=Regarding ${listing?.name}&body=${encodeURIComponent(message)}`}
         className="text-white bg-slate-700 p-3 rounded-lg uppercase hover:opacity-95 mt-4 inline-block cursor-pointer"
       >
         Send Message

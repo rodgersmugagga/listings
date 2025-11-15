@@ -83,6 +83,8 @@ const listingSchema = new Schema(
 
     // Seller
     userRef: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  // Seller email cached for convenience (populated at creation)
+  sellerEmail: { type: String, trim: true, lowercase: true },
 
     // Promotion metadata
     isFeatured: { type: Boolean, default: false },

@@ -95,6 +95,7 @@ export const createListing = async (req, res, next) => {
       imageUrls,
       imagePublicIds,
       userRef,
+      sellerEmail: req.user?.user?.email || payload.sellerEmail || undefined,
       isFeatured: payload.isFeatured || false,
       featuredUntil: payload.featuredUntil || null,
       boosted: payload.boosted || false,
