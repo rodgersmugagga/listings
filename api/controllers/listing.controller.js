@@ -1,4 +1,5 @@
 import Listing from "../models/listing.model.js";
+import User from "../models/user.model.js";
 import { generateSeo } from '../utils/seo.js';
 
 // Allowed categories and subcategories (must match the schema in listing.model.js)
@@ -82,6 +83,18 @@ export const createListing = async (req, res, next) => {
 
     const seoData = payload.seo || generateSeo(payload.category, payload.subCategory, details, payload.address);
 
+    // Resolve seller email from the authenticated user reference (JWT may not contain email)
+    let resolvedSellerEmail = payload.sellerEmail || undefined;
+    try {
+      if (userRef && !resolvedSellerEmail) {
+        const userDoc = await User.findById(userRef).lean();
+        if (userDoc?.email) resolvedSellerEmail = userDoc.email;
+      }
+    } catch (e) {
+      // ignore lookup errors and fall back to payload if present
+      console.error('Failed to resolve seller email at create time', e?.message || e);
+    }
+
     const toCreate = {
       name: payload.name,
       description: payload.description,
@@ -95,7 +108,7 @@ export const createListing = async (req, res, next) => {
       imageUrls,
       imagePublicIds,
       userRef,
-      sellerEmail: req.user?.user?.email || payload.sellerEmail || undefined,
+  sellerEmail: resolvedSellerEmail,
       isFeatured: payload.isFeatured || false,
       featuredUntil: payload.featuredUntil || null,
       boosted: payload.boosted || false,
@@ -243,6 +256,25 @@ export const getListing = async (req, res, next) => {
       return res.status(404).json({ message: 'Listing not found' });
     }
 
+    // Ensure sellerEmail is present on returned object for quick contact
+    if (!listing.sellerEmail && listing.userRef) {
+      try {
+        const user = await User.findById(listing.userRef).lean();
+        if (user?.email) {
+          listing.sellerEmail = user.email;
+          // persist for future reads (best-effort)
+          try {
+            await Listing.findByIdAndUpdate(listing._id, { sellerEmail: user.email }).catch(() => {});
+          } catch (e) {
+            // ignore persistence errors
+          }
+        }
+      } catch (err) {
+        // ignore user lookup errors - still return listing without email
+        console.error('Failed to populate sellerEmail for listing', listing._id, err.message);
+      }
+    }
+
     return res.status(200).json(listing);
   } catch (error) {
     console.error('Get listing error:', error);
@@ -288,6 +320,32 @@ export const getListings = async (req, res, next) => {
       .lean();
 
     const total = await Listing.countDocuments(filter);
+
+    // Ensure seller emails are attached to listings (batch lookup for missing ones)
+    const listingsToFill = listings.filter(l => !l.sellerEmail && l.userRef).map(l => String(l.userRef));
+    if (listingsToFill.length > 0) {
+      try {
+        const uniqueUserIds = [...new Set(listingsToFill)];
+        const users = await User.find({ _id: { $in: uniqueUserIds } }).lean();
+        const userById = users.reduce((acc, u) => { acc[String(u._id)] = u; return acc; }, {});
+
+        // Attach emails to listings in-memory and persist them (best-effort)
+        const updates = [];
+        listings.forEach((listing) => {
+          if (!listing.sellerEmail && listing.userRef) {
+            const u = userById[String(listing.userRef)];
+            if (u?.email) {
+              listing.sellerEmail = u.email;
+              updates.push(Listing.findByIdAndUpdate(listing._id, { sellerEmail: u.email }).catch(() => {}));
+            }
+          }
+        });
+
+        if (updates.length > 0) await Promise.all(updates);
+      } catch (err) {
+        console.error('Failed to batch-populate seller emails for listings:', err.message);
+      }
+    }
 
     return res.status(200).json({
       success: true,

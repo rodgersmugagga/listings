@@ -12,7 +12,15 @@ export default function FieldRenderer({
   subCategory,
   error,
 }) {
-  const meta = FIELD_METADATA[fieldName];
+  // Resolve metadata: allow generic field names (e.g., 'brand') to map to
+  // category-specific metadata like 'brand_vehicle' or 'brand_electronic'.
+  let meta = FIELD_METADATA[fieldName];
+  if (!meta) {
+    const suffix = category === 'Vehicles' ? 'vehicle' : (category === 'Electronics' ? 'electronic' : '');
+    if (suffix) {
+      meta = FIELD_METADATA[`${fieldName}_${suffix}`];
+    }
+  }
   const isRequired = isFieldRequired(category, subCategory, fieldName);
 
   if (!meta) return null;
