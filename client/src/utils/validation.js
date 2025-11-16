@@ -143,8 +143,8 @@ export const validateSignUp = (username, email, password) => {
     errors.push('Password is required');
   } else if (password.length < 6) {
     errors.push('Password must be at least 6 characters');
-  } else if (password.length > 12) {
-    errors.push('Password must not exceed 12 characters');
+  } else if (password.length > 20) {
+    errors.push('Password must not exceed 20 characters');
   } else if (!/[A-Z]/.test(password)) {
     errors.push('Password must contain at least one uppercase letter');
   } else if (!/[a-z]/.test(password)) {
@@ -246,8 +246,8 @@ export const validateProfileUpdate = (data) => {
   if (data.password) {
     if (data.password.length < 6) {
       errors.push('Password must be at least 8 characters');
-    } else if (data.password.length > 128) {
-      errors.push('Password must not exceed 128 characters');
+    } else if (data.password.length > 20) {
+      errors.push('Password must not exceed 20 characters');
     } else if (!/[A-Z]/.test(data.password)) {
       errors.push('Password must contain at least one uppercase letter');
     } else if (!/[a-z]/.test(data.password)) {

@@ -31,9 +31,20 @@ export default function CreateListing() {
   // Handle generic field changes
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
-    if (id === 'category' || id === 'subCategory') {
-      setFormData(prev => ({ ...prev, [id]: value, details: {} }));
-    } else if (type === 'checkbox') {
+    // If category changed, reset subCategory to a sensible default for the new category
+    if (id === 'category') {
+      const defaultSub = value === 'Real Estate' ? 'Apartment' : (value === 'Vehicles' ? 'Car' : 'Mobile Phone');
+      setFormData(prev => ({ ...prev, category: value, subCategory: defaultSub, details: {} }));
+      return;
+    }
+
+    // If subCategory changed, clear category-specific details
+    if (id === 'subCategory') {
+      setFormData(prev => ({ ...prev, subCategory: value, details: {} }));
+      return;
+    }
+
+    if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [id]: checked }));
     } else {
       setFormData(prev => ({ ...prev, [id]: type === 'number' ? Number(value) : value }));

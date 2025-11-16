@@ -59,7 +59,7 @@ export default function SignIn() {
       if (res.ok) {
         // If login is successful
         dispatch(signInSuccess(data)); // Store user/token in Redux state
-        setMessage("✅ Login successful! Redirecting..."); // Set success message to show user
+        setMessage("Login successful! Redirecting..."); // Set success message to show user
         setTimeout(() => navigate("/"), 1000); // Redirect user to home page
       } else {
         // If login fails

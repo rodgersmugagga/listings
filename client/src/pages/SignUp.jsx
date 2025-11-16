@@ -45,7 +45,7 @@ export default function SignUp() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("✅ Registration successful! Redirecting to sign in...");
+        setMessage("Registration successful! Redirecting to sign in...");
         setTimeout(() => navigate("/sign-in"), 2000);
       } else {
         setErrors([data.message || "Registration failed!"]);

@@ -140,7 +140,7 @@ export const google = async (req, res, next) => {
       const baseUsername = (username || 'user').split(' ').join('').toLowerCase();
       
       // Ensure we have a valid photo URL or use the default avatar
-      const avatar = photo || "https://res.cloudinary.com/dnj7dtnvx/image/upload/v1760363461/samples/zoom.avif";
+      const avatar = photo || "https://res.cloudinary.com/dnj7dtnvx/image/upload/v1763294361/vecteezy_user-avatar-ui-button_13907861_j7b38y.jpg";
       
       const newUser = new User({
         username: baseUsername + Math.random().toString(36).slice(-4),

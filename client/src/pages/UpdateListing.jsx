@@ -98,13 +98,21 @@ export default function UpdateListing() {
   const handleChange = (e) => {
     const { id, value, checked } = e.target;
 
-    // If category or subcategory changes, clear the details object
-    if (id === 'category' || id === 'subCategory') {
+    // If category changed, reset subCategory to a sensible default and clear details
+    if (id === 'category') {
+      const defaultSub = value === 'Real Estate' ? 'Apartment' : (value === 'Vehicles' ? 'Car' : 'Mobile Phone');
       setFormData((prev) => ({
         ...prev,
-        [id]: value,
+        category: value,
+        subCategory: defaultSub,
         details: {}, // Clear category-specific fields when switching categories
       }));
+      return;
+    }
+
+    // If only subCategory changed, clear details
+    if (id === 'subCategory') {
+      setFormData((prev) => ({ ...prev, subCategory: value, details: {} }));
       return;
     }
 
