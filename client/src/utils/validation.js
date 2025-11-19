@@ -22,16 +22,16 @@ export const validateListing = (data) => {
 
   if (!data.description?.trim()) {
     errors.push('Description is required');
-  } else if (data.description.trim().length < 20) {
-    errors.push('Description must be at least 20 characters');
+  } else if (data.description.trim().length < 10) {
+    errors.push('Description must be at least 10 characters');
   } else if (data.description.trim().length > 2000) {
     errors.push('Description must not exceed 2000 characters');
   }
 
   if (!data.address?.trim()) {
     errors.push('Address is required');
-  } else if (data.address.trim().length < 5) {
-    errors.push('Address must be at least 5 characters');
+  } else if (data.address.trim().length < 3) {
+    errors.push('Address must be at least 3 characters');
   }
 
   // Price validation
@@ -127,9 +127,9 @@ export const validateSignUp = (username, email, password) => {
     errors.push('Username must be at least 3 characters');
   } else if (username.trim().length > 30) {
     errors.push('Username must not exceed 30 characters');
-  } else if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
-    errors.push('Username can only contain letters, numbers, underscores, and hyphens');
-  }
+   } //else if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+  //   errors.push('Username can only contain letters, numbers, underscores, and hyphens');
+  // }
 
   // Email validation
   if (!email?.trim()) {
@@ -145,15 +145,15 @@ export const validateSignUp = (username, email, password) => {
     errors.push('Password must be at least 6 characters');
   } else if (password.length > 20) {
     errors.push('Password must not exceed 20 characters');
-  } else if (!/[A-Z]/.test(password)) {
-    errors.push('Password must contain at least one uppercase letter');
-  } else if (!/[a-z]/.test(password)) {
-    errors.push('Password must contain at least one lowercase letter');
+  // } else if (!/[A-Z]/.test(password)) {
+  //   errors.push('Password must contain at least one uppercase letter');
+  // } else if (!/[a-z]/.test(password)) {
+  //   errors.push('Password must contain at least one lowercase letter');
   } else if (!/[0-9]/.test(password)) {
     errors.push('Password must contain at least one number');
-  } else if (!/[!@#$%^&*_\-+=]/.test(password)) {
-    errors.push('Password must contain at least one special character (!@#$%^&*_-+=)');
-  }
+  } //else if (!/[!@#$%^&*_\-+=]/.test(password)) {
+  //   errors.push('Password must contain at least one special character (!@#$%^&*_-+=)');
+  // }
 
   
 
@@ -230,9 +230,9 @@ export const validateProfileUpdate = (data) => {
       errors.push('Username must be at least 3 characters');
     } else if (data.username.trim().length > 30) {
       errors.push('Username must not exceed 30 characters');
-    } else if (!/^[a-zA-Z0-9_-]+$/.test(data.username)) {
-      errors.push('Username can only contain letters, numbers, underscores, and hyphens');
-    }
+    } //else if (!/^[a-zA-Z0-9_-]+$/.test(data.username)) {
+      //errors.push('Username can only contain letters, numbers, underscores, and hyphens');
+    //}
   }
 
   // Email validation (if provided)
@@ -245,13 +245,13 @@ export const validateProfileUpdate = (data) => {
   // Password validation (if provided)
   if (data.password) {
     if (data.password.length < 6) {
-      errors.push('Password must be at least 8 characters');
+      errors.push('Password must be at least 6 characters');
     } else if (data.password.length > 20) {
       errors.push('Password must not exceed 20 characters');
-    } else if (!/[A-Z]/.test(data.password)) {
-      errors.push('Password must contain at least one uppercase letter');
-    } else if (!/[a-z]/.test(data.password)) {
-      errors.push('Password must contain at least one lowercase letter');
+    // } else if (!/[A-Z]/.test(data.password)) {
+    //   errors.push('Password must contain at least one uppercase letter');
+    // } else if (!/[a-z]/.test(data.password)) {
+    //   errors.push('Password must contain at least one lowercase letter');
     } else if (!/[0-9]/.test(data.password)) {
       errors.push('Password must contain at least one number');
     }
